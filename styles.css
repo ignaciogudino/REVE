@@ -1,0 +1,536 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* COMIENZO DEL NAVBAR */
+
+.navbar {
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px 0 50px;
+    border-bottom: 0.1px solid #ccc;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: black;
+    transition: transform 0.3s;
+    font-family: 'Geologica', sans-serif;
+    padding: 15px;
+}
+
+.navbar a:hover {
+    background-color: #ddd;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-title {
+    font-size: 2rem;
+    font-family: 'Times New Roman', serif;
+}
+
+/* FIN DEL NAVBAR */
+
+
+/* COMIENZO DEL BUSCADOR */
+.hero-section {
+    height: 300px;
+    background-image: url('images/banner_camioneta.jfif');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.search-container {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    width: 50%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Geologica', sans-serif;
+}
+
+.search-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-family: 'Geologica', sans-serif;
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+}
+/* FIN DEL BUSCADOR */
+
+/* COMIENZO ESLOGAN */
+.app-section {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-name {
+    font-size: 5rem;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    font-family: 'Times New Roman', serif;
+    font-style: bold;
+    width: 100%;
+}
+
+.app-slogan {
+    font-size: 2rem;
+    font-weight: 400; /* Semibold */
+    font-family: 'Geologica', sans-serif;
+    width: 100%;
+}
+  /* COMIENZO ESLOGAN */
+
+/* COMIENZO AUTOS DESTACADOS */
+.featured-section {
+    padding: 0 50px 50px 50px;
+}
+
+.featured-subtitle {
+    font-size: 2rem;
+    padding: 1rem 1rem;
+    font-family: 'Geologica', sans-serif;
+    font-style: bold;
+}
+
+.card-list {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.card {
+    width: 30%;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    overflow: hidden;
+    transition: transform 0.2s;
+    font-family: 'Geologica', sans-serif;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.card:hover img{
+    opacity: 90%;
+}
+
+.card-img {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img img {
+    width: 100%;
+    height: auto;
+}
+
+.card-details {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-label {
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+.card-car {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.card-distance {
+    font-size: 0.8rem;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.card-divider {
+    border-top: 1px solid #ccc;
+    margin: 10px 0;
+}
+
+.card-price{
+    text-align: right;
+}
+/* FIN AUTOS DESTACADOS*/
+
+
+/* COMIENZO INFO REVE */
+.info-section {
+    text-align: center;
+    padding: 50px;
+    background-color: rgb(11, 11, 49);
+    color: #ffffff;
+}
+
+.info-title {
+    font-size: 2rem;
+    padding: 1.5rem;
+    font-family: 'Geologica', sans-serif;
+}
+
+.info-icons {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin-top: 25px;
+}
+
+.info-icon {
+    width: 25%;    
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-icon-wrapper{
+    padding: 1rem;
+}
+
+
+.info-icon-title{
+    font-style: bold;
+    font-size: 1.2rem;
+    min-height: 2rem;
+}
+
+
+.info-icon-subtitle{
+    font-size: 0.8rem;
+}
+/* FIN INFO REVE */ 
+
+
+/* COMIENZO FOOTER*/
+.footer {
+    background-color: #f0f0f0; /* Color de fondo gris claro */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    position: relative;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-around;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.footer-section div {
+    text-decoration: none;
+    color: #000000;
+    padding: 5px;
+}
+
+.footer-section div:hover  {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.footer-item-wrapper{
+    flex-direction: row;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-size: 0.8rem;
+    color: #555;
+}
+
+/* FIN FOOTER */
+
+
+/* COMIENZO CARD PUBLICACION */
+
+.hero-section-absolute{
+    position: absolute;
+    top: 3rem;
+    left: 0;
+    width: 100%;
+    height:300px;
+    background-image: url('images/banner_camioneta.jfif');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+}
+
+.card-rent-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-top: 100px;
+}
+
+.card-rent-request{    
+    background-color: #ffffff;
+    width: 70%;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-family: 'Geologica', sans-serif;
+}
+
+.card-info-wrapper{
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title-rent-request{
+    color: #000000;
+    font-size: 2.2rem;
+}
+
+.info-owner-wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.card-title-rent{
+    font-size: 1.4rem;
+    margin-top: 1rem;
+}
+
+.card-owner-title{
+    width: 100%;
+}
+
+.card-owner-subtitle{
+    color: #484848;
+    width: 100%;
+    display: flex;
+    gap: 10px;
+}
+
+.container-slider {
+	padding: 2rem;
+}
+
+.slider-wrapper {
+	position: relative;
+	max-width: 48rem;
+	margin: 0 auto;
+}
+
+.slider {
+	display: flex;
+	aspect-ratio: 16 / 9;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+	box-shadow: 0 1.5rem 3rem -0.75rem hsla(0, 0%, 0%, 0.25);
+	border-radius: 0.5rem;
+	-ms-overflow-style: none; 
+	scrollbar-width: none; 
+}
+
+.slider::-webkit-scrollbar {
+	display: none;
+}
+
+.slider img {
+	flex: 1 0 100%;
+	scroll-snap-align: start;
+	object-fit: cover;
+}
+
+.slider-nav {
+	display: flex;
+	column-gap: 1rem;
+	position: absolute;
+	bottom: 1.25rem;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1;
+}
+
+.slider-nav a {
+	width: 0.5rem;
+	height: 0.5rem;
+	border-radius: 50%;
+	background-color: #fff;
+	opacity: 0.75;
+	transition: opacity ease 250ms;
+}
+
+.slider-nav a:hover {
+	opacity: 1;
+}
+
+.date-wrapper{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 15px
+}
+
+.date-from{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: 10px auto;
+    gap: 10px;
+}
+
+.date-to{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: 10px auto;
+    gap: 10px;
+
+}
+
+.input-date{
+    font-size: 1rem;
+    font-family: 'Geologica', sans-serif;
+}
+
+.tyc-wrapper{
+    display: flex;
+    flex-direction: row;
+}
+
+.tyc:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.button-rent-request{
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 15px;
+    font-family: 'Geologica', sans-serif;
+    font-size: 1rem;
+}
+
+.button-rent-request:hover{
+    background-color: #0056b3;
+}
+
+
+/* FIN CARD PUBLICACION */
+  
+  /* Estilos para pantallas más pequeñas */
+  @media (max-width: 700px) {
+
+    .navbar{
+        padding: 0%;
+    }
+
+    /* BUSCADOR */
+
+    .search-container {
+        width: 70%;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        gap: 5px;
+    }
+    .search-button {
+        margin-top: 10px;
+        margin-left: 0;
+    }
+    .search-input {
+        width: 95%;
+        text-align: center;
+    }
+    .search-button {
+       width: 95%;
+    }
+
+    /* AUTOS DESTACADOS*/
+
+    .card {
+        width: 90%;
+    }
+
+    /* FECHAS */
+    .date-wrapper{
+        flex-direction: column;
+    }
+    .date-from{
+        width: 100%;
+    }
+    
+    .date-to{
+        width: 100%;
+    }
+
+
+    /* SECCION INFO*/
+    .info-section {
+        padding: 0;
+    }
+    .info-icons {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+    }
+    .info-icon {
+        width: 100%;
+    }
+  }

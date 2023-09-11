@@ -126,6 +126,15 @@ body {
     font-style: bold;
 }
 
+.justified-text{
+    font-size: 1rem;
+    padding: 1rem 1rem;
+    font-family: 'Geologica', sans-serif;
+    font-style: bold;
+    text-align: justify;
+
+}
+
 .card-list {
     display: flex;
     justify-content: space-around;
@@ -135,6 +144,17 @@ body {
 }
 
 .card {
+    width: 30%;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    overflow: hidden;
+    transition: transform 0.2s;
+    font-family: 'Geologica', sans-serif;
+}
+
+.card-aux {
     width: 30%;
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -196,8 +216,19 @@ body {
     margin: 10px 0;
 }
 
-.card-price{
-    text-align: right;
+.trash-publicacion{
+    transition: 0.2s;
+}
+
+.trash-publicacion:hover{
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.wrap-price-icons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 /* FIN AUTOS DESTACADOS*/
 

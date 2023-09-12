@@ -36,13 +36,13 @@
                 <input class="input" type="text" name="apellido" placeholder="Apellido" v-model="apellido">
             </div>
             <div class="wrap-input">
-                <input class="input" type="text" name="dni" placeholder="DNI" v-model="dni">
+                <input class="input" type="number" name="dni" placeholder="DNI" v-model="dni">
             </div>
             <div class="wrap-input">
                 <input class="input" type="text" name="domicilio" placeholder="Domicilio" v-model="domicilio">
             </div>
             <div class="wrap-input">
-                <input class="input" type="text" name="whatsapp" placeholder="WhatsApp" v-model="wsp">
+                <input class="input" type="number" name="whatsapp" placeholder="WhatsApp" v-model="wsp">
             </div>
             <div class="wrap-input">
                 <input class="input" type="text" name="cbu" placeholder="CBU" v-model="cbu">
@@ -145,10 +145,16 @@ export default {
     },
     register(){
         if(!this.nombre || !this.apellido || !this.dni || !this.domicilio || !this.wsp || !this.cbu  || !this.mail || !this.password || !this.repeatPassword)
-                return Swal.fire('Error', 'Falta completar algún campo obligatorio.', 'error')
+            return Swal.fire('Error', 'Falta completar algún campo obligatorio.', 'error')
+
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if(!regex.test(this.mail)){
+            return Swal.fire('Error', 'Formato inválido de correo electronico.', 'error')
+        }
 
         if(this.password != this.repeatPassword)
-                return Swal.fire('Error', 'Las contraseñas no coinciden.', 'error')
+            return Swal.fire('Error', 'Las contraseñas no coinciden.', 'error')
 
 
 

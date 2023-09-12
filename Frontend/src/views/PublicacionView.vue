@@ -57,13 +57,12 @@
                 <div class="date-wrapper">
                     <div class="date-from">
                         <span>Retiro</span>
-                        <input type="date" class="input-date">
+                        <input v-model="fechaRetiro" type="date" class="input-date">
                     </div>
 
                     <div class="date-to">
                         <span>Entrega</span>
-                        <input type="date" class="input-date">
-
+                        <input v-model="fechaEntrega" type="date" class="input-date">
                     </div>
                 </div>
 
@@ -106,7 +105,11 @@ export default {
   data(){
     return{
         idPublicacion: 0,
-        check: false
+        check: false,
+
+        //v-model
+        fechaEntrega: 0,
+        fechaRetiro: 0
     }
   },
   created(){
@@ -134,12 +137,17 @@ export default {
                 this.$router.push('/');
             },
         }) 
-
-        
-
+    }
+  },
+  watch:{
+    fechaEntrega: function(newValue){
+        if(newValue < this.fechaRetiro)
+            this.fechaEntrega = this.fechaRetiro
+    },
+    fechaRetiro: function(){
+        this.fechaEntrega = 0
     }
   }
-  
 }
 </script>
 
@@ -150,7 +158,7 @@ export default {
 
 .hero-section-absolute{
     position: absolute;
-    top: 3rem;
+    top: 3.3rem;
     left: 0;
     width: 100%;
     height:300px;

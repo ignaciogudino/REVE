@@ -18,18 +18,31 @@
                 <div @click="verInfoSolicitud()" class="trash-publicacion"><i class="fas fa-search"></i></div>
             </div>
             <!-- SOLICITUD SOLICITADA -->
+
+            <!-- SOLICITUD PENDIENTE PAGO -->
+            <div v-if="this.estado == 3" class="wrap-price-icons">
+                <span>ESTADO PUBLICACION: <span style="color: purple">PAGO PENDIENTE</span></span>
+            </div>
+            <!-- SOLICITUD PENDIENTE PAGO -->
             
             <!-- SOLICITUD PAGADA-->
-             <div v-if="this.estado == 3" class="wrap-price-icons">
+             <div v-if="this.estado == 4" class="wrap-price-icons">
                 <span>ESTADO: <span style="color: blue">ALQUILADO (Hasta 27/09/2023)</span></span>
                 <div @click="verInfoAlquiler()" class="trash-publicacion"><i class="fas fa-search"></i></div>
             </div>
             <!-- SOLICITUD PAGADA-->
 
+            <!-- SOLICITUD FINALIZADA-->
+             <div v-if="this.estado == 5" class="wrap-price-icons">
+                <span>ESTADO PUBLICACION: <span style="color: red">FINALIZADA</span></span>
+            </div>
+            <!-- SOLICITUD FINALIZADA-->
+
             <hr class="card-divider">
 
-            <div class="wrap-price-icons" v-if="this.estado != 3">
-                <div @click="eliminarPublicacion()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
+            <div class="wrap-price-icons">
+                <div v-if="this.estado == 1 || this.estado == 5" @click="eliminarPublicacion()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
+                <div v-else></div>
                 <span>$12.500/día</span>
             </div>
             
@@ -53,8 +66,10 @@ export default {
             text: "Esta acción no podrá deshacerse.",
             icon: "warning",
             showCloseButton: true,
-            confirmButtonColor: "#FF0000",
-            confirmButtonText: `CANCELAR`,
+            confirmButtonText: 'ACEPTAR',
+            cancelButtonColor: "#FF0000",
+            showCancelButton: true,
+            cancelButtonText: 'CANCELAR',
             preConfirm: async () => {
                 await Swal.fire('PUBLICACIÓN ELIMINADA', '', 'success')
             },

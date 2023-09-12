@@ -2,7 +2,7 @@
     <!-- COMIENZO RESULTADOS EN {lugar} -->
     <div class="featured-section">
         <div class="wrapper">
-            <span class="featured-subtitle"><b>Resultados en {{lugar}}</b></span>
+            <span class="featured-subtitle"><b>Resultados en {{lugar}}:</b></span>
         </div>
         <div class="card-list">
             <CardResultado></CardResultado>

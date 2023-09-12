@@ -11,6 +11,8 @@
                 <CardPublicacion :estado="1"></CardPublicacion>
                 <CardPublicacion :estado="2"></CardPublicacion>
                 <CardPublicacion :estado="3"></CardPublicacion>
+                <CardPublicacion :estado="4"></CardPublicacion>
+                <CardPublicacion :estado="5"></CardPublicacion>
             </div>
     </div>
     <!-- FIN MIS PUBLICACIONES -->

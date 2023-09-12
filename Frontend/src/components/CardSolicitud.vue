@@ -34,7 +34,7 @@
             <hr class="card-divider">
 
             <div class="wrap-price-icons">
-                <div @click="eliminarSolicitud()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
+                <div v-if="this.estado == 0" @click="eliminarSolicitud()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
                 <span>$12.500/día</span>
             </div>
             

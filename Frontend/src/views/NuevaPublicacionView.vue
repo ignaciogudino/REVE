@@ -211,7 +211,7 @@ export default {
                 this.$router.push('/');
             },
         }) 
-    }
+    },
   },
   watch: {
      marca: function () {
@@ -220,7 +220,19 @@ export default {
       this.capacidad = '';
       this.puertas = '';
       this.km = '';
-    }
+    },
+    km: function (newValue) {
+        this.km = Math.abs(newValue)
+    },
+    capacidad: function (newValue) {
+        this.capacidad = Math.abs(newValue)
+    },
+    puertas: function (newValue) {
+        this.puertas = Math.abs(newValue)
+    },
+    precio: function (newValue) {
+        this.precio = Math.abs(newValue)
+    },
   }
   
 }
@@ -233,7 +245,7 @@ export default {
 
 .hero-section-absolute{
     position: absolute;
-    top: 3rem;
+    top: 3.3rem;
     left: 0;
     width: 100%;
     height:300px;

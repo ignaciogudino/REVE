@@ -87,11 +87,19 @@ body {
     font-family: 'Geologica', sans-serif;
 }
 
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+input[type=number] { -moz-appearance:textfield; }
+
 
 /* COMIENZO DEL NAVBAR */
 
 .navbar {
-    height: 3rem;
+    height: 3.3rem;
     display: flex;
     align-items: center;
     justify-content: space-between;

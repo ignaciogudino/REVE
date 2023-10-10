@@ -123,7 +123,8 @@ export default class CarController {
   static async rechazarSolicitud(req, res, next) {
     try {
         const id = req.params.idPublicacion
-        await Car.rechazarSolicitud(id);
+        const motivo = req.body.motivo
+        await Car.rechazarSolicitud(id, motivo);
         
         return await res.status(200).json({message: "SOLICITUD RECHAZADA"})
         

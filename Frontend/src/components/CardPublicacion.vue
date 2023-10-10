@@ -121,12 +121,40 @@ export default {
                     }
                     else{
                     //RECHAZAR SOLICITUD 
-                    axios.put(process.env.VUE_APP_API_URL + '/rechazar-solicitud/' + data.ID_PUBLICACION)
-                    .then(async resp => {
-                        Swal.fire(resp.data.message, '','success')
-                        this.$emit("refresh")
+
+                    Swal.fire({
+                        title: `Ingrese un Motivo de Rechazo`,
+                        html: `<input type="text" id="rechazo" class="swal2-input" size=32 placeholder="Motivo de Rechazo">`,
+                        icon: "warning",
+                        showCloseButton: true,
+                        confirmButtonText: `RECHAZAR SOLICITUD`,
+                        confirmButtonColor: '#3085d6',
+                        showCancelButton: true,
+                        cancelButtonText: 'CANCELAR',
+                        cancelButtonColor: '#b80f0f',
+                    }).then((result) => {
+
+                        if (result.isConfirmed){
+
+                            const motivo = Swal.getPopup().querySelector('#rechazo').value
+
+                            console.log("MOTIVO:", motivo)
+
+                            if (!motivo) {
+                                 return Swal.fire('Error', 'No puedes rechazar sin un motivo', 'error')
+                            }
+
+                            axios.put(process.env.VUE_APP_API_URL + '/rechazar-solicitud/' + data.ID_PUBLICACION, {motivo: motivo})
+                            .then(async resp => {
+                                Swal.fire(resp.data.message, '','success')
+                                this.$emit("refresh")
+                            })
+                            .catch(err => console.log(err))
+                        }
+
                     })
-                    .catch(err => console.log(err))
+
+                    
                     }
                 })
             })

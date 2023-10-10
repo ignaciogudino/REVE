@@ -39,6 +39,4 @@ export default function userRoutes(app) {
     router.post('/crear-publicacion', Car.crearPublicacion)
 
     router.get('/buscar/:ciudad', Car.buscarPublicaciones)
-
-
 }

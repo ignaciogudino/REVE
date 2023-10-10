@@ -13,7 +13,10 @@
             <hr class="card-divider">
 
             <!-- SOLICITUD RECHAZADA -->
-            <span v-if="this.solicitud.ID_ESTADO_ALQUILER == 0">ESTADO SOLICITUD: <span style="color: RED">RECHAZADA</span></span>
+             <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 0" class="wrap-price-icons">
+                <span>ESTADO SOLICITUD: <span style="color: RED">RECHAZADA</span></span>
+                <div @click="verMotivoRechazo()" class="trash-publicacion"><i class="fas fa-search"></i></div>
+            </div>    
             <!-- SOLICITUD RECHAZADA -->
 
             <!-- SOLICITUD PENDIENTE -->
@@ -31,11 +34,15 @@
             <span v-if="this.solicitud.ID_ESTADO_ALQUILER == 3">ESTADO: <span style="color: blue">ALQUILADO (Hasta {{fechaEntrega}})</span></span>
             <!-- SOLICITUD PAGADA-->
 
+            <!-- SOLICITUD PAGADA-->
+            <span v-if="this.solicitud.ID_ESTADO_ALQUILER == 5">ESTADO: <span style="color: RED">FINALIZADA</span></span>
+            <!-- SOLICITUD PAGADA-->
+
             <hr class="card-divider">
 
             <div class="wrap-price-icons">
-                <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 0" @click="eliminarSolicitud()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
                 <span>$ <b>{{this.solicitud.COSTO}}</b>   (${{this.solicitud.PRECIO_DIA}}/día)</span>
+                <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 0" @click="eliminarSolicitud()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
             </div>
             
         </div>
@@ -96,6 +103,9 @@ export default {
                 
             },
         }) 
+    },
+    verMotivoRechazo(){
+        return Swal.fire('Motivo de Rechazo', `"`+this.solicitud.MOTIVO_RECHAZO+`"`, 'info')
     }
     },
     computed: {

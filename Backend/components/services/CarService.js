@@ -114,8 +114,13 @@ export default class CarService {
     }
   }
 
-  static async rechazarSolicitud(idPublicacion) {
+  static async rechazarSolicitud(idPublicacion, motivo) {
     try {
+
+      await db.query(
+        `UPDATE ALQUILER SET MOTIVO_RECHAZO = ? WHERE ID_PUBLICACION = ? AND ID_ESTADO_ALQUILER = 1`, [motivo, idPublicacion]
+      );
+
       await db.query(
         `UPDATE PUBLICACION SET ID_ESTADO_PUBLICACION = 1 WHERE ID_PUBLICACION = ? `, [idPublicacion]
       );
@@ -123,6 +128,7 @@ export default class CarService {
       await db.query(
         `UPDATE ALQUILER SET ID_ESTADO_ALQUILER = 0 WHERE ID_PUBLICACION = ? `, [idPublicacion]
       );
+
 
 
     } catch (err) {
@@ -137,11 +143,11 @@ export default class CarService {
   static async aceptarSolicitud(idPublicacion) {
     try {
       await db.query(
-        `UPDATE PUBLICACION SET ID_ESTADO_PUBLICACION = 3 WHERE ID_PUBLICACION = ? `, [idPublicacion]
+        `UPDATE PUBLICACION SET ID_ESTADO_PUBLICACION = 3 WHERE ID_PUBLICACION = ? AND ID_ESTADO_PUBLICACION = 2`, [idPublicacion]
       );
 
       await db.query(
-        `UPDATE ALQUILER SET ID_ESTADO_ALQUILER = 2 WHERE ID_PUBLICACION = ? `, [idPublicacion]
+        `UPDATE ALQUILER SET ID_ESTADO_ALQUILER = 2 WHERE ID_PUBLICACION = ? AND ID_ESTADO_ALQUILER = 1`, [idPublicacion]
       );
 
 
@@ -195,12 +201,12 @@ export default class CarService {
         WHERE P.ID_PUBLICACION IN (
             SELECT A.ID_PUBLICACION
             FROM ALQUILER A
-            WHERE A.ID_ALQUILER = ?
+            WHERE A.ID_ALQUILER = ? AND A.ID_ESTADO_ALQUILER = 2
           )`, [idSolicitud]
       );
 
       await db.query(
-        `UPDATE ALQUILER SET ID_ESTADO_ALQUILER = 3 WHERE ID_ALQUILER = ? `, [idSolicitud]
+        `UPDATE ALQUILER SET ID_ESTADO_ALQUILER = 3 WHERE ID_ALQUILER = ? AND ID_ESTADO_ALQUILER = 2`, [idSolicitud]
       );
 
 

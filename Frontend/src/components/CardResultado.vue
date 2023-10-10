@@ -1,13 +1,13 @@
 <template>
    <div class="card" @click="navegarAPublicacion()">
       <div class="card-img">
-          <img src="../assets/images/card_auto_principal.jpg">
+          <img :src="imagenUrl">
       </div>
       <div class="card-details">
-          <span class="card-car">Suran 1.6 Comfortline, Volkswagen</span>
-          <span class="card-distance">La Plata, Buenos Aires (43km de distancia)</span>
+          <span class="card-car">{{car.MODELO}}, {{car.MARCA}} ({{car.KILOMETRAJE}} km)</span>
+          <span class="card-distance">{{car.UBICACION_RETIRO}}</span>
           <hr class="card-divider">
-          <span class="card-price">$12.500/día</span>
+          <span class="card-price">${{car.PRECIO_DIA}}/día</span>
       </div>
   </div>
 </template>
@@ -15,13 +15,21 @@
 <script>
 
 export default {
-  name: 'CardResultado',
-  methods: {
-    navegarAPublicacion() {
-      // Utiliza Vue Router para redirigir al usuario a la ruta "/publicacion/111"
-      this.$router.push('/publicacion/111');
+    name: 'CardResultado',
+    props:{
+    car: null
     },
-  }
+    methods: {
+    navegarAPublicacion() {
+        this.$router.push('/publicacion/' + this.car.ID_PUBLICACION);
+    },
+    },
+    computed: {
+        imagenUrl(){
+            let url = 'http://localhost:3000/' + this.car.IMG_URL
+            return url
+        }
+    }
 
 }
 </script>

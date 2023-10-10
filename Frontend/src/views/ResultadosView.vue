@@ -4,11 +4,13 @@
         <div class="wrapper">
             <span class="featured-subtitle"><b>Resultados en {{lugar}}:</b></span>
         </div>
-        <div class="card-list">
-            <CardResultado></CardResultado>
-            <CardResultado></CardResultado>
-            <CardResultado></CardResultado>
+        <div class="card-list" v-if="publicaciones.length != 0">
+            <CardResultado :car="p" v-for="p in publicaciones" v-bind:key="p.index"></CardResultado>
         </div>
+        <div class="card-list" v-else style="min-height: 30vh; margin-top: 8rem">
+            <h1>No existen resultados para {{lugar}}</h1>
+        </div>
+
     </div>
     <!-- FIN RESULTADOS EN {lugar} -->
 
@@ -16,6 +18,7 @@
 
 <script>
 import CardResultado from '../components/CardResultado.vue';
+import axios from 'axios';
 
 export default {
   name: 'ResultadosView',
@@ -24,12 +27,21 @@ export default {
   },
   data(){
     return{
-        lugar: ''
+        lugar: '',
+        publicaciones: []
     }
   },
   created(){
     this.lugar = this.$route.params.lugar.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    this.buscarResultados()
   },
+  methods: {
+    async buscarResultados(){
+        await axios.get(process.env.VUE_APP_API_URL + '/buscar/' + this.lugar)
+        .then(resp => this.publicaciones = resp.data)
+        .catch(err => console.log(err))
+    }
+  }
   
 }
 </script>

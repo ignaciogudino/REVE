@@ -2,40 +2,40 @@
 
     <div class="card-aux">
         <div class="card-img">
-            <img src="../assets/images/card_auto_principal.jpg">
+            <img :src="imagenUrl">
         </div>
         <div class="card-details">
-            <span class="card-car">Suran 1.6 Comfortline, Volkswagen</span>
-            <span class="card-distance">La Plata, Buenos Aires (43km de distancia)</span>
-            <span class="card-distance">Propietario: Hector Jose Cuevas</span>
-            <span class="card-distance"><i class="fa fa-whatsapp"></i> 221-5951753</span>
+            <span class="card-car">{{this.solicitud.MODELO}}, {{this.solicitud.MARCA}} ({{this.solicitud.KILOMETRAJE}} km)</span>
+            <span class="card-distance">{{this.solicitud.UBICACION_RETIRO}}</span>
+            <span class="card-distance">Propietario: {{this.solicitud.NOMBRE}} {{this.solicitud.APELLIDO}}</span>
+            <span class="card-distance"><i class="fa fa-whatsapp"></i> {{this.solicitud.WSP}}</span>
 
             <hr class="card-divider">
 
             <!-- SOLICITUD RECHAZADA -->
-            <span v-if="this.estado == 0">ESTADO SOLICITUD: <span style="color: RED">RECHAZADA</span></span>
+            <span v-if="this.solicitud.ID_ESTADO_ALQUILER == 0">ESTADO SOLICITUD: <span style="color: RED">RECHAZADA</span></span>
             <!-- SOLICITUD RECHAZADA -->
 
             <!-- SOLICITUD PENDIENTE -->
-            <span v-if="this.estado == 1">ESTADO SOLICITUD: <span style="color: orange">PENDIENTE</span></span>
+            <span v-if="this.solicitud.ID_ESTADO_ALQUILER == 1">ESTADO SOLICITUD: <span style="color: orange">PENDIENTE</span></span>
             <!-- SOLICITUD PENDIENTE -->
 
             <!-- SOLICITUD ACEPTADA-->
-            <div v-if="this.estado == 2" class="wrap-price-icons">
+            <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 2" class="wrap-price-icons">
                 <span>ESTADO: <span style="color: green">ACEPTADO (PAGO PENDIENTE)</span></span>
                 <div @click="realizarPago()" class="trash-publicacion"><i class="fa fa-shopping-cart"></i></div>
             </div>            
             <!-- SOLICITUD ACEPTADA-->
             
             <!-- SOLICITUD PAGADA-->
-            <span v-if="this.estado == 3">ESTADO: <span style="color: blue">ALQUILADO (Hasta 27/09/2023)</span></span>
+            <span v-if="this.solicitud.ID_ESTADO_ALQUILER == 3">ESTADO: <span style="color: blue">ALQUILADO (Hasta {{fechaEntrega}})</span></span>
             <!-- SOLICITUD PAGADA-->
 
             <hr class="card-divider">
 
             <div class="wrap-price-icons">
-                <div v-if="this.estado == 0" @click="eliminarSolicitud()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
-                <span>$12.500/día</span>
+                <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 0" @click="eliminarSolicitud()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
+                <span>$ <b>{{this.solicitud.COSTO}}</b>   (${{this.solicitud.PRECIO_DIA}}/día)</span>
             </div>
             
         </div>
@@ -45,26 +45,40 @@
 
 <script>
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 export default {
   name: 'CardSolicitud',
   props: {
-    estado: undefined
+    solicitud: null
   },
+  emits: ["refresh"],
   methods: {
-   eliminarSolicitud(){
+    eliminarSolicitud(){
         return Swal.fire({
             title: `¿Está seguro que desea eliminar la solicitud?`,
-            text: "Esta acción no podrá deshacerse",
+            text: "Esta acción no podrá deshacerse.",
             icon: "warning",
             showCloseButton: true,
-            confirmButtonColor: "#FF0000",
-            confirmButtonText: `CANCELAR`,
+            confirmButtonText: 'ACEPTAR',
+            cancelButtonColor: "#FF0000",
+            showCancelButton: true,
+            cancelButtonText: 'CANCELAR',
             preConfirm: async () => {
-                await Swal.fire('SOLICITUD ELIMINADA', '', 'success')
+
+                axios.delete(process.env.VUE_APP_API_URL + '/solicitud/' + this.solicitud.ID_ALQUILER)
+                 .then(async resp => {
+                    await Swal.fire(resp.data.message, '', 'success')
+                    this.$emit("refresh")
+                    
+                }).catch( err => {
+                    Swal.fire('Error',err.response.data.message,'error')
+                })
+
+
             },
         }) 
-   },
+    },
     realizarPago(){
         return Swal.fire({
             title: `¿Está seguro que desea realizar el pago?`,
@@ -73,11 +87,26 @@ export default {
             showCloseButton: true,
             confirmButtonText: `IR A MERCADOPAGO`,
             preConfirm: async () => {
-                await Swal.fire('PAGO REALIZADO', '', 'success')
+                await axios.put(process.env.VUE_APP_API_URL + '/pagar-solicitud/' + this.solicitud.ID_ALQUILER)
+                .then(async resp => {
+                    Swal.fire(resp.data.message, resp.data.text,'success')
+                    this.$emit("refresh")
+                })
+                .catch(err => console.log(err))
+                
             },
         }) 
     }
-  }
+    },
+    computed: {
+        imagenUrl(){
+            let url = 'http://localhost:3000/' + this.solicitud.IMG_URL
+            return url
+        },
+        fechaEntrega(){
+            return new Date(this.solicitud.FECHA_ENTREGA + 1000 * 60 * 60 * 3).toLocaleDateString()
+        }
+    }
 }
 </script>
 

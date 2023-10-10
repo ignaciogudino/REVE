@@ -65,7 +65,7 @@ const router = createRouter({
 
 //TODO: Si no esta logueado lo mando al login. Cambiar cuando este hecho lo del jwt Bearer
 router.beforeEach(async (to) => {
-  const isAuthenticated = localStorage.getItem('user')
+  const isAuthenticated = localStorage.getItem('token')
   if (!isAuthenticated && to.path !== '/login') 
     return { path: '/login' }
 })

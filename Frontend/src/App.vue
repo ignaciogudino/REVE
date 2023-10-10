@@ -64,7 +64,7 @@ export default {
             confirmButtonColor: "#FF0000",
             confirmButtonText: `SALIR`,
             preConfirm: async () => {
-                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
                     this.$router.push({path: '/login'})
                 },
             }) 

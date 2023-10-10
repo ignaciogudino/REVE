@@ -118,30 +118,16 @@ export default {
             return
         }
 
-        this.$router.push({path: '/'})
+        await axios.post(process.env.VUE_APP_API_URL + "/login", {email: this.mail, password: this.password})
+        .then(async resp => {
+            let token = 'Bearer ' + resp.data.token
+            axios.defaults.headers.common['Authorization'] = token
+            await localStorage.setItem('token', token)
+            this.$router.push({path: '/'})
+        }).catch( err => {
+            Swal.fire('Error',err.response.data.message,'error')
+        })
 
-        let response = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
-        axios.defaults.headers.common['Authorization'] = response
-
-        const user = JSON.stringify({nombre: 'Pablo', apellido: 'Gimenez'})
-        await localStorage.setItem('user', user)
-
-
-
-        // await axios.post(process.env.VUE_APP_API_URL + "/login", {username: this.username, password: this.password})
-        // .then(async resp => {
-        //     if(resp.data.status && resp.data.status === "error"){
-        //         Swal.fire('Error',resp.data.message,'error')
-        //     }else{
-        //         let data = resp.data.user
-        //         axios.defaults.headers.common['Authorization'] = resp.data.token
-        //         const user = JSON.stringify({ID_USER: data.ID_USER, NOMBRE: data.NOMBRE, APELLIDO: data.APELLIDO, DNI: data.DNI, ROL: data.ID_ROL, VENCIMIENTO: data.VENCIMIENTO})
-        //         await localStorage.setItem('user', user)
-        //         this.$router.push({path: '/'})
-        //     }
-        // }).catch( err => {
-        //     console.log(err)
-        // })
     },
     register(){
         if(!this.nombre || !this.apellido || !this.dni || !this.domicilio || !this.wsp || !this.cbu  || !this.mail || !this.password || !this.repeatPassword)
@@ -165,9 +151,14 @@ export default {
             showCloseButton: true,
             confirmButtonText: `CREAR CUENTA`,
             preConfirm: async () => {
-                //TODO: Creo la solicitud llamado backend
 
-                await Swal.fire('Exito','Creación de cuenta exitosa.', 'success')
+                  await axios.post(process.env.VUE_APP_API_URL + "/register", {mail: this.mail, password: this.password, nombre: this.nombre, apellido: this.apellido, domicilio: this.domicilio, wsp: this.wsp, cbu: this.cbu, dni: this.dni})
+                    .then(async resp => {
+                        await Swal.fire('Exito',resp.data.message, 'success')
+                    }).catch( err => {
+                        Swal.fire('Error',err.response.data.message,'error')
+                    })
+
                 this.registerMode = false
             },
         }) 

@@ -4,37 +4,32 @@
 
     <div class="card-rent-container">
         <div class="card-rent-request">
-            <div class="card-info-wrapper">
+            <div class="card-info-wrapper" v-if="publicacion">
                 <span class="card-title-rent-request">Solicitud de Alquiler</span>
 
                 <div class="info-owner-wrapper">
                     <span class="card-title-rent">Propietario</span>
-                    <span class="card-owner-title">Hector B. Cuevas (DNI 38.432.176)</span>
-                    <span class="card-owner-subtitle"><i class="fa-solid fa-location-dot"></i>Calle 47 n783, La Plata, Buenos Aires</span>
-                    <span class="card-owner-subtitle"><i class="fa fa-whatsapp"></i>221 5751693</span>
-                    <span class="card-owner-subtitle"><i class="fa fa-envelope"></i>hector.cuevas@gmail.com</span>
+                    <span class="card-owner-title">{{publicacion.NOMBRE}} {{publicacion.APELLIDO}} (DNI {{publicacion.DNI}})</span>
+                    <span class="card-owner-subtitle"><i class="fa-solid fa-location-dot"></i>{{publicacion.UBICACION_RETIRO}}</span>
+                    <span class="card-owner-subtitle"><i class="fa fa-whatsapp"></i>{{publicacion.WSP}}</span>
+                    <span class="card-owner-subtitle"><i class="fa fa-envelope"></i>{{publicacion.EMAIL}}</span>
                 </div>
 
                 <hr class="card-divider">
                 
                 <!-- CARRUSEL IMAGENES -->
 
+                <span class="card-title-rent">Imagen del Vehiculo</span>
+
                 <section class="container-slider">
                     <div class="slider-wrapper">
                         <div class="slider">
-                            <img id="slide-1" src="../assets/images/suran_1.jpg" alt="GOL Trend foto 1" />
-                            <img id="slide-2" src="../assets/images/suran_2.jpg" alt="GOL Trend foto 2" />
-                            <img id="slide-3" src="../assets/images/suran_3.jpg" alt="GOL Trend foto 3" />
+                            <!-- <img v-if="selectedFileUrl" :src="selectedFileUrl" alt="Imagen Seleccionada"/> -->
+                            <img :src="imagenUrl" alt="Imagen vacia">
                         </div>
-                        <!-- 
-                        <div class="slider-nav">
-                            <a href="#slide-1" data-target="slide-1"></a>
-                            <a href="#slide-2" data-target="slide-1"></a>
-                            <a href="#slide-3" data-target="slide-1"></a>
-                        </div>
-                        -->
                     </div>
                 </section>
+
 
                 <hr class="card-divider">
 
@@ -42,12 +37,13 @@
 
                 <div class="info-owner-wrapper">
                     <span class="card-title-rent">Características del vehículo</span>
-                    <span class="card-owner-title">Marca: Volkswagen </span>
-                    <span class="card-owner-title">Modelo: Suran 1.6 Comfortline</span>
-                    <span class="card-owner-title">Color: Gris</span>
-                    <span class="card-owner-title">Capacidad: 5 personas</span>
-                    <span class="card-owner-title">Puertas: 5</span>
-                    <span class="card-owner-title">Kilometros: 98.000</span>
+                    <span class="card-owner-title"><b>Marca:</b> {{publicacion.MARCA}} </span>
+                    <span class="card-owner-title"><b>Modelo:</b> {{publicacion.MODELO}}</span>
+                    <span class="card-owner-title"><b>Color:</b> {{publicacion.COLOR}}</span>
+                    <span class="card-owner-title"><b>Capacidad:</b> {{publicacion.CAPACIDAD}} personas</span>
+                    <span class="card-owner-title"><b>Puertas:</b> {{publicacion.PUERTAS}}</span>
+                    <span class="card-owner-title"><b>Kilometros:</b> {{publicacion.KILOMETRAJE}}</span>
+                    <span class="card-owner-title"><b>Comentarios:</b> {{publicacion.COMENTARIO}}</span>
                 </div>
 
                 <hr class="card-divider">
@@ -71,8 +67,8 @@
                 <!-- PAGO -->
                 <div class="info-owner-wrapper">
                     <span class="card-title-rent">Pago</span>
-                    <span class="card-owner-title">Precio por Dia: <strong> 12.500 $</strong></span>
-                    <span class="card-owner-title">Total:<strong> 25.000 $ </strong>(12.500 x 2 dias)</span>
+                    <span class="card-owner-title">Precio por Dia: <strong> {{publicacion.PRECIO_DIA}} $</strong></span>
+                    <span class="card-owner-title">Total: <strong> {{precioFinal}} $ </strong>({{publicacion.PRECIO_DIA}} x {{restoDias}} dias)</span>
                 </div>
 
                 <hr class="card-divider">
@@ -97,6 +93,7 @@
 
 <script>
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 export default {
   name: 'PublicacionView',
@@ -107,15 +104,47 @@ export default {
         idPublicacion: 0,
         check: false,
 
+        publicacion: null,
+
         //v-model
-        fechaEntrega: 0,
-        fechaRetiro: 0
+        fechaEntrega: new Date(),
+        fechaRetiro: new Date()
+    }
+  },
+  computed: {
+    restoDias: function () {
+      if (this.fechaRetiro && this.fechaEntrega) {
+        var diferencia = new Date(this.fechaEntrega).getTime() - new Date(this.fechaRetiro).getTime();
+        return Math.floor(diferencia / (1000 * 60 * 60 * 24));
+      }
+      return 0; // Otra opción podría ser devolver null o un mensaje de error.
+    },
+    precioFinal: function () {
+      if (this.fechaRetiro && this.fechaEntrega) {
+        return this.publicacion.PRECIO_DIA * this.restoDias;
+      }
+      return 0; // Otra opción podría ser devolver null o un mensaje de error.
+    },
+    imagenUrl(){
+        let url = 'http://localhost:3000/' + this.publicacion.IMG_URL
+        return url
     }
   },
   created(){
     this.idPublicacion = this.$route.params.idPublicacion;
+    this.getPublicacion()
   },
   methods: {
+
+    async getPublicacion(){
+        await axios.get(process.env.VUE_APP_API_URL + '/publicacion/' + this.idPublicacion)
+        .then(async resp => {
+            this.publicacion = resp.data
+        })
+        .catch( err => {
+            Swal.fire('Error',err.response.data.message,'error')
+        })
+    },
     consultar(){
         if(!this.check){
             return Swal.fire(
@@ -124,7 +153,12 @@ export default {
                 'error')
         }
 
-        //TODO: Creo la solicitud llamado backend
+         if(!this.fechaEntrega || !this.fechaRetiro){
+            return Swal.fire(
+                'Error', 
+                'Debes completar los campos "Fecha de Entrega" y/o "Fecha de Retiro"', 
+                'error')
+        }
 
         Swal.fire({
             title: `¿Enviar solicitud de alquiler?`,
@@ -133,8 +167,17 @@ export default {
             showCloseButton: true,
             confirmButtonText: `ENVIAR`,
             preConfirm: async () => {
-                await Swal.fire('Exito','Solicitud de alquiler enviada!', 'success')
-                this.$router.push('/');
+
+                let fecha1 = new Date(this.fechaRetiro).getTime()
+                let fecha2 = new Date(this.fechaEntrega).getTime()
+
+                 await axios.post(process.env.VUE_APP_API_URL + "/solicitar-alquiler", {idPublicacion: this.publicacion.ID_PUBLICACION, fechaRetiro: fecha1, fechaEntrega: fecha2, costo: this.precioFinal})
+                    .then(async resp => {
+                        await Swal.fire('Exito',resp.data.message, 'success')
+                        this.$router.push('/');
+                    }).catch( err => {
+                        Swal.fire('Error',err.response.data.message,'error')
+                    })
             },
         }) 
     }

@@ -60,22 +60,20 @@
                                 <option v-for="item in modelos[marca]" :key="item">{{item}}</option>
                             </select>                    
                         </div>
-                    </div>
-                    <div class="date-wrapper">
-                        <div class="date-from"> 
+                          <div class="date-from"> 
                             <span>Color</span>
                            <select v-model="color" name="color" id="color" class="input-date"  :disabled="!modelo">
                                 <option value="" selected disabled hidden>Seleccionar</option>
                                 <option v-for="item in colores" :key="item">{{item}}</option>
                             </select>
                         </div>
-
+                    </div>
+                   
+                    <div class="date-wrapper">
                         <div class="date-to">
                             <span>Capacidad</span>
                             <input v-model="capacidad" type="number" class="input-date" :disabled="!color">
                         </div>
-                    </div>
-                    <div class="date-wrapper">
                         <div class="date-from"> 
                             <span>Puertas</span>
                             <input v-model="puertas" type="number" class="input-date" :disabled="!capacidad">
@@ -86,12 +84,16 @@
                             <input v-model="km" type="number" class="input-date" :disabled="!puertas">
                         </div>
                     </div>
+
                     <div class="date-wrapper">
+                     <div class="date-from"> 
+                            <span>Ubicación de Retiro</span>
+                            <input v-model="ubicacion" type="text" class="input-date" :placeholder="domicilio" >
+                        </div>
                         <div class="date-from"> 
                             <span>Precio por Dia (en pesos)</span>
                             <input v-model="precio" type="number" class="input-date">
                         </div>
-
                         <div class="date-to">
                             <span>Comentarios (opcional)</span>
                             <input v-model="comentarios" type="text" class="input-date">
@@ -100,23 +102,26 @@
                 </div>
                 
                 <!-- CARRUSEL IMAGENES -->
+                <hr class="card-divider">
+                
+                <span class="card-title-rent">Imagen del Vehiculo</span>
 
-                <!-- 
                 <section class="container-slider">
                     <div class="slider-wrapper">
                         <div class="slider">
-                            <img id="slide-1" src="images/suran_1.jfif" alt="GOL Trend foto 1" />
-                            <img id="slide-2" src="images/suran_2.jfif" alt="GOL Trend foto 2" />
-                            <img id="slide-3" src="images/suran_3.jfif" alt="GOL Trend foto 3" />
-                        </div>
-                        <div class="slider-nav">
-                            <a href="#slide-1" data-target="slide-1"></a>
-                            <a href="#slide-2" data-target="slide-1"></a>
-                            <a href="#slide-3" data-target="slide-1"></a>
+                            <img v-if="selectedFileUrl" :src="selectedFileUrl" alt="Imagen Seleccionada"/>
+                            <img v-else src="../assets/images/empty.png" alt="Imagen vacia">
                         </div>
                     </div>
                 </section>
-                -->
+
+                <div class="wrapper-file-upload">
+                    <div class="custom-file-input">
+                        <input class="file-input" type="file" ref="fileInput" @change="handleFileChange" accept="image/*">
+                        <button @click="openFilePicker">Seleccionar Imagen</button>
+                    </div>
+                </div>
+
                 <hr class="card-divider">
 
                  <!-- TERMINOS Y CONDICIONES -->
@@ -139,21 +144,20 @@
 
 <script>
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 export default {
   name: 'NuevaPublicacionView',
-  components: {
-  },
   data(){
     return{
-        //datos de usuario
-        idPublicacion: 0,
         check: false,
-        nombre: 'Hector',
-        apellido: 'Cuevas',
-        domicilio: 'Calle 7 n464, La Plata',
-        whatsapp: 2215951865,
-        correo: 'hector.cuevas@hotmail.com',
+
+        //datos de usuario
+        nombre: '',
+        apellido: '',
+        domicilio: '',
+        whatsapp: 0,
+        correo: '',
 
 
         //v-model
@@ -165,6 +169,10 @@ export default {
         km: '',
         precio: '',
         comentarios: '',
+        ubicacion: '',
+        selectedFile: null,
+        selectedFileUrl: null,
+
 
         //select-boxes
         colores: ["Rojo", "Azul", "Negro", "Blanco", "Gris", "Otro"],
@@ -180,23 +188,32 @@ export default {
     }
   },
   created(){
-    this.idPublicacion = this.$route.params.idPublicacion;
+    this.getUsuario()
   },
   methods: {
-    crearPublicacion(){
+    async crearPublicacion(){
 
         if(!this.marca || !this.modelo || !this.color || !this.capacidad || !this.puertas|| !this.km|| !this.precio)
-           return Swal.fire(
-                'Error', 
-                'Falta completar algún campo obligatorio.', 
-                'error')
+            return Swal.fire('Error', 'Falta completar algún campo obligatorio.', 'error')
 
-        if(!this.check){
-            return Swal.fire(
-                'Error', 
-                'Debes aceptar los "Terminos y Condiciones" para crear una publicación.', 
-                'error')
-        }
+        if (!this.selectedFile) 
+            return Swal.fire('Error', 'Debes seleccionar una imagen del automóvil.', 'error')
+        
+        if(!this.check)
+            return Swal.fire('Error', 'Debes aceptar los "Terminos y Condiciones" para crear una publicación.', 'error')
+        
+        const formData = new FormData();
+        formData.append('imagen', this.selectedFile);
+        formData.append('marca', this.marca);
+        formData.append('modelo', this.modelo);
+        formData.append('color', this.color);
+        formData.append('capacidad', this.capacidad);
+        formData.append('puertas', this.puertas);
+        formData.append('km', this.km);
+        formData.append('ubicacion', this.ubicacion);
+        formData.append('precio', this.precio);
+        formData.append('comentario', this.comentarios);
+
 
         Swal.fire({
             title: `Crear nueva publicación?`,
@@ -205,12 +222,38 @@ export default {
             showCloseButton: true,
             confirmButtonText: `ENVIAR`,
             preConfirm: async () => {
-                //TODO: Creo la solicitud llamado backend
-
-                await Swal.fire('Exito','Publicación creada!', 'success')
-                this.$router.push('/');
+                await axios.post(
+                process.env.VUE_APP_API_URL + '/crear-publicacion',
+                formData,
+                    {
+                        headers: {
+                        'Content-Type': 'multipart/form-data',
+                        },
+                    }
+                )
+                .then(async resp => {
+                    await Swal.fire(resp.data.message, resp.data.text, 'success')
+                    this.$router.push('/');
+                }).catch( err => {
+                    Swal.fire('Error',err.response.data.message,'error')
+                })
             },
         }) 
+    },
+    async getUsuario(){
+        await axios.get(process.env.VUE_APP_API_URL + '/usuario')
+        .then(resp => {
+            this.nombre = resp.data.nombre
+            this.apellido = resp.data.apellido
+            this.domicilio = resp.data.domicilio
+            this.whatsapp = resp.data.wsp
+            this.correo = resp.data.email
+        })
+        .catch(err => console.log(err))
+    },
+    handleFileChange(event) {
+        this.selectedFile = event.target.files[0];
+        this.selectedFile ? this.selectedFileUrl = URL.createObjectURL(this.selectedFile) : this.selectedFileUrl = null
     },
   },
   watch: {
@@ -416,6 +459,38 @@ export default {
 .card-divider {
     border-top: 1px solid #ccc;
     margin: 10px 0;
+}
+
+.wrapper-file-upload{
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.custom-file-input {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.custom-file-input button {
+  background-color: #007bff; 
+  color: white; 
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.custom-file-input input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }
 
 /* FIN CARD PUBLICACION */

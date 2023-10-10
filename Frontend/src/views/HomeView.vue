@@ -21,12 +21,10 @@
     <hr style="margin: 50px">
 
     <!-- COMIENZO VEHICULOS DESTACADOS -->
-    <div class="featured-section">
+    <div class="featured-section" v-if="cars">
         <h2 class="featured-subtitle">Vehículos destacados</h2>
-        <div class="card-list">
-            <CardResultado></CardResultado>
-            <CardResultado></CardResultado>
-            <CardResultado></CardResultado>
+        <div class="card-list" >
+            <CardResultado :car="car" v-for="car in cars" v-bind:key="car.index"></CardResultado>
         </div>
     </div>
     <!-- FIN VEHICULOS DESTACADOS -->
@@ -64,6 +62,8 @@
 
 <script>
 import CardResultado from '../components/CardResultado.vue';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 export default {
   name: 'HomeView',
@@ -72,13 +72,24 @@ export default {
   },
   data(){
     return{
-        lugar: ''
+        lugar: '',
+        cars: []
     }
   },
-   methods: {
-
+  created(){
+    this.getHighlights()
   },
-   computed: {
+  methods: {
+    async getHighlights(){
+        await axios.get(process.env.VUE_APP_API_URL + "/destacados")
+        .then(async resp => {
+            this.cars = resp.data.cars
+        }).catch( err => {
+            Swal.fire('Error',err.response.data.message,'error')
+        })
+    }
+  },
+  computed: {
     formatLugar() {
     // Utiliza una expresión regular para que /buscar/{lugar} sea lowerCase y sin espacios
       return this.lugar.toLowerCase().replace(/\s+/g, '-');

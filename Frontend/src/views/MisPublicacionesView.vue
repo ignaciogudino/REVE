@@ -7,12 +7,11 @@
                 <button class="search-button">+ Nueva Publicacion</button>
             </router-link> 
         </div>
-            <div class="card-list">
-                <CardPublicacion :estado="1"></CardPublicacion>
-                <CardPublicacion :estado="2"></CardPublicacion>
-                <!-- <CardPublicacion :estado="3"></CardPublicacion> -->
-                <CardPublicacion :estado="4"></CardPublicacion>
-                <!-- <CardPublicacion :estado="5"></CardPublicacion> -->
+            <div class="card-list" v-if="publicaciones">
+                <CardPublicacion :publicacion="p" v-for="p in publicaciones" v-bind:key="p.index" @refresh="getMisPublicaciones()"></CardPublicacion>
+            </div>
+            <div class="card-list" v-else style="min-height: 30vh; margin-top: 8rem">
+                <h1>Aún no creaste ninguna publicación</h1>
             </div>
     </div>
     <!-- FIN MIS PUBLICACIONES -->
@@ -20,12 +19,32 @@
 
 <script>
 import CardPublicacion from '../components/CardPublicacion.vue';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 export default {
   name: 'MisPublicacionesView',
   components: {
     CardPublicacion
   },
+  data(){
+    return {
+        publicaciones: []
+    }
+  },
+  created(){
+    this.getMisPublicaciones()
+  },
+  methods: {
+    async getMisPublicaciones(){
+         await axios.get(process.env.VUE_APP_API_URL + "/mis-publicaciones")
+        .then(async resp => {
+            this.publicaciones = resp.data
+        }).catch( err => {
+            Swal.fire('Error',err.response.data.message,'error')
+        })
+    }
+  }
 }
 </script>
 

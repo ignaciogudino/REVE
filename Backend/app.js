@@ -6,6 +6,8 @@ import serverRoutes from './routes/index.js'
 const app = express()
 const PORT = 3000
 
+app.use('/uploads', express.static('uploads'));
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 

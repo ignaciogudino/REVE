@@ -4,13 +4,12 @@
         <div class="wrapper">
             <span class="featured-subtitle"><b>Mis Solicitudes</b></span>
         </div>
-        <div class="card-list">
-            <CardSolicitud :estado="0"></CardSolicitud>
-            <CardSolicitud :estado="0"></CardSolicitud>
-            <CardSolicitud :estado="0"></CardSolicitud>
-            <CardSolicitud :estado="1"></CardSolicitud>
-            <CardSolicitud :estado="2"></CardSolicitud>
-            <CardSolicitud :estado="3"></CardSolicitud>
+        <div class="card-list" v-if="solicitudes">
+            <CardSolicitud :solicitud="s" v-for="s in solicitudes" v-bind:key="s.index" @refresh="getMisSolicitudes()"></CardSolicitud>
+        </div>
+
+        <div class="card-list" v-else style="min-height: 30vh; margin-top: 8rem">
+            <h1>Aún no realizaste ninguna solicitud de alquiler</h1>
         </div>
     </div>
     <!-- FIN MIS SOLICITUDES -->
@@ -19,12 +18,32 @@
 
 <script>
 import CardSolicitud from '../components/CardSolicitud.vue';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 export default {
   name: 'MisSolicitudesView',
   components: {
     CardSolicitud
   },
+  data(){
+    return {
+        solicitudes: []
+    }
+  },
+  created(){
+    this.getMisSolicitudes()
+  },
+  methods: {
+    async getMisSolicitudes(){
+         await axios.get(process.env.VUE_APP_API_URL + "/mis-solicitudes")
+        .then(async resp => {
+            this.solicitudes = resp.data
+        }).catch( err => {
+            Swal.fire('Error',err.response.data.message,'error')
+        })
+    }
+  }
 }
 </script>
 

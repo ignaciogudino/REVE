@@ -2,38 +2,38 @@
 
     <div class="card-aux">
         <div class="card-img">
-            <img src="../assets/images/card_auto_principal.jpg">
+            <img :src="imagenUrl">
         </div>
         <div class="card-details">
-            <span class="card-car">Suran 1.6 Comfortline, Volkswagen</span>
+            <span class="card-car">{{this.publicacion.MODELO}}, {{this.publicacion.MARCA}} ({{this.publicacion.KILOMETRAJE}} km)</span>
             <hr class="card-divider">
 
             <!-- SOLICITUD ACTIVA -->
-            <span v-if="this.estado == 1">ESTADO PUBLICACION: <span style="color: green">ACTIVA</span></span>
+            <span v-if="this.publicacion.ID_ESTADO_PUBLICACION == 1">ESTADO PUBLICACION: <span style="color: green">ACTIVA</span></span>
             <!-- SOLICITUD ACTIVA -->
 
             <!-- SOLICITUD SOLICITADA -->
-            <div v-if="this.estado == 2" class="wrap-price-icons">
+            <div v-if="this.publicacion.ID_ESTADO_PUBLICACION == 2" class="wrap-price-icons">
                 <span>ESTADO PUBLICACION: <span style="color: orange">SOLICITADA!</span></span>
                 <div @click="verInfoSolicitud()" class="trash-publicacion"><i class="fas fa-search"></i></div>
             </div>
             <!-- SOLICITUD SOLICITADA -->
 
             <!-- SOLICITUD PENDIENTE PAGO -->
-            <div v-if="this.estado == 3" class="wrap-price-icons">
+            <div v-if="this.publicacion.ID_ESTADO_PUBLICACION == 3" class="wrap-price-icons">
                 <span>ESTADO PUBLICACION: <span style="color: purple">PAGO PENDIENTE</span></span>
             </div>
             <!-- SOLICITUD PENDIENTE PAGO -->
             
             <!-- SOLICITUD PAGADA-->
-             <div v-if="this.estado == 4" class="wrap-price-icons">
-                <span>ESTADO: <span style="color: blue">ALQUILADO (Hasta 27/09/2023)</span></span>
+             <div v-if="this.publicacion.ID_ESTADO_PUBLICACION == 4" class="wrap-price-icons">
+                <span>ESTADO PUBLICACION: <span style="color: blue">ALQUILADO</span></span>
                 <div @click="verInfoAlquiler()" class="trash-publicacion"><i class="fas fa-search"></i></div>
             </div>
             <!-- SOLICITUD PAGADA-->
 
             <!-- SOLICITUD FINALIZADA-->
-             <div v-if="this.estado == 5" class="wrap-price-icons">
+             <div v-if="this.publicacion.ID_ESTADO_PUBLICACION == 5" class="wrap-price-icons">
                 <span>ESTADO PUBLICACION: <span style="color: red">FINALIZADA</span></span>
             </div>
             <!-- SOLICITUD FINALIZADA-->
@@ -41,7 +41,7 @@
             <hr class="card-divider">
 
             <div class="wrap-price-icons">
-                <div v-if="this.estado == 1 || this.estado == 5" @click="eliminarPublicacion()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
+                <div v-if="this.publicacion.ID_ESTADO_PUBLICACION == 1 || this.publicacion.ID_ESTADO_PUBLICACION == 5" @click="eliminarPublicacion()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
                 <div v-else></div>
                 <span>$12.500/día</span>
             </div>
@@ -53,61 +53,118 @@
 
 <script>
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 export default {
   name: 'CardPublicacion',
   props: {
-    estado: undefined
+    publicacion: null
   },
+  emits: ["refresh"],
   methods: {
-    eliminarPublicacion(){
-        return Swal.fire({
-            title: `¿Está seguro que desea ELIMINAR la publicación?`,
-            text: "Esta acción no podrá deshacerse.",
-            icon: "warning",
-            showCloseButton: true,
-            confirmButtonText: 'ACEPTAR',
-            cancelButtonColor: "#FF0000",
-            showCancelButton: true,
-            cancelButtonText: 'CANCELAR',
-            preConfirm: async () => {
-                await Swal.fire('PUBLICACIÓN ELIMINADA', '', 'success')
-            },
-        }) 
-    },
-    verInfoAlquiler(){
-        return Swal.fire(
-            'Información del alquiler',
-            `<b>Locatario</b>: Oscar Sanchez<br>
-             <b>Teléfono</b>: 221-595-1232 <br>
-             <b>Fecha Retiro</b>: 12/09/23 <br>
-             <b>Fecha Entrega</b>: 27/09/23<br>`,
-            'info'
-        )},
-    verInfoSolicitud(){
-        return Swal.fire({
-            title: `Solicitud de Alquiler`,
-            html: `<b>Locatario</b>: Oscar Sanchez<br>
-             <b>Teléfono</b>: 221-595-1232 <br>
-             <b>Fecha Retiro</b>: 12/09/23 <br>
-             <b>Fecha Entrega</b>: 27/09/23<br>
-             <b>Ganancia Total</b>: $80.000<br>`,
-            icon: "warning",
-            showCloseButton: true,
-            confirmButtonText: `ACEPTAR SOLICITUD`,
-            confirmButtonColor: '#3085d6',
-            showCancelButton: true,
-            cancelButtonText: 'RECHAZAR',
-            cancelButtonColor: '#b80f0f',
-        }).then((result) => {
-            if (result.isConfirmed) 
-                return Swal.fire('SOLICITUD ACEPTADA', '', 'success')
-            
-            return Swal.fire( 'SOLICITUD RECHAZADA', '', 'success' )
+        eliminarPublicacion(){
+            return Swal.fire({
+                title: `¿Está seguro que desea ELIMINAR la publicación?`,
+                text: "Esta acción no podrá deshacerse.",
+                icon: "warning",
+                showCloseButton: true,
+                confirmButtonText: 'ACEPTAR',
+                cancelButtonColor: "#FF0000",
+                showCancelButton: true,
+                cancelButtonText: 'CANCELAR',
+                preConfirm: async () => {
+
+                    axios.delete(process.env.VUE_APP_API_URL + '/publicacion/' + this.publicacion.ID_PUBLICACION)
+                    .then(async resp => {
+                        await Swal.fire(resp.data.message, '', 'success')
+                        this.$emit("refresh")
+                        
+                    }).catch( err => {
+                        Swal.fire('Error',err.response.data.message,'error')
+                    })
+
+
+                },
+            }) 
+        },
+        async verInfoSolicitud(){
+
+            await axios.get(process.env.VUE_APP_API_URL + '/ver-solicitud/'+ this.publicacion.ID_PUBLICACION)
+            .then(async resp => {
+
+                let data = resp.data
+
+                return Swal.fire({
+                        title: `Solicitud de Alquiler`,
+                        html: `<b>Locatario</b>: `+ data.NOMBRE + ` ` + data.APELLIDO +`<br>
+                        <b>Teléfono</b>: ` + data.WSP +`<br>
+                        <b>Fecha Retiro</b>: ` + new Date(data.FECHA_RETIRO + 1000 * 60 * 60 * 3).toLocaleDateString()  +  `<br>
+                        <b>Fecha Entrega</b>: ` + new Date(data.FECHA_ENTREGA + 1000 * 60 * 60 * 3).toLocaleDateString() +  `<br>
+                        <b>Ganancia Total</b>: $`+data.COSTO+`<br>`,
+                        icon: "warning",
+                        showCloseButton: true,
+                        confirmButtonText: `ACEPTAR SOLICITUD`,
+                        confirmButtonColor: '#3085d6',
+                        showCancelButton: true,
+                        cancelButtonText: 'RECHAZAR',
+                        cancelButtonColor: '#b80f0f',
+                    }).then((result) => {
+                    //ACEPTAR SOLICITUD
+                    if (result.isConfirmed) {
+                        axios.put(process.env.VUE_APP_API_URL + '/aceptar-solicitud/' + data.ID_PUBLICACION)
+                        .then(async resp => {
+                            Swal.fire(resp.data.message, '','success')
+                            this.$emit("refresh")
+                            return
+                        })
+                        .catch(err => console.log(err))
+                    }
+                    else{
+                    //RECHAZAR SOLICITUD 
+                    axios.put(process.env.VUE_APP_API_URL + '/rechazar-solicitud/' + data.ID_PUBLICACION)
+                    .then(async resp => {
+                        Swal.fire(resp.data.message, '','success')
+                        this.$emit("refresh")
+                    })
+                    .catch(err => console.log(err))
+                    }
+                })
             })
-        }
+            .catch( err => {
+                Swal.fire('Error',err.response.data.message,'error')
+            })
+        
+        },
+        async verInfoAlquiler(){
+
+            await axios.get(process.env.VUE_APP_API_URL + '/ver-solicitud/'+ this.publicacion.ID_PUBLICACION)
+            .then(async resp => {
+
+                let data = resp.data
+
+                return Swal.fire({
+                        title: `Detalles del alquiler`,
+                        html: `<b>Locatario</b>: `+ data.NOMBRE + ` ` + data.APELLIDO +`<br>
+                        <b>Teléfono</b>: ` + data.WSP +`<br>
+                        <b>Fecha Retiro</b>: ` + new Date(data.FECHA_RETIRO + 1000 * 60 * 60 * 3).toLocaleDateString()  +  `<br>
+                        <b>Fecha Entrega</b>: ` + new Date(data.FECHA_ENTREGA + 1000 * 60 * 60 * 3).toLocaleDateString() +  `<br>
+                        <b>Ganancia Total</b>: $`+data.COSTO+`<br>`,
+                        icon: "warning",
+                        showCloseButton: true,
+                    })
+            })
+            .catch( err => {
+                Swal.fire('Error',err.response.data.message,'error')
+            })
+        
+        },
     },
-    
+    computed: {
+        imagenUrl(){
+            let url = 'http://localhost:3000/' + this.publicacion.IMG_URL
+            return url
+        }
+    }
 }
 </script>
 

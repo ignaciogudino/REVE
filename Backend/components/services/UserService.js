@@ -4,43 +4,71 @@ const db = new DB();
 
 export default class UserService {
 
-  static async checkLogin(username, pass) {
+  static async checkLogin(email, pass) {
     try {
       const user = await db.query(
-        `SELECT * FROM USUARIO WHERE DNI = ? AND DELETED = 0`, [username]
+        `SELECT * FROM USUARIO WHERE EMAIL = ? AND CONTRASENA = ? `, [email, pass]
       );
-      if(user && pass === user[0]?.CONTRASENA){
+      if(user.length > 0){
         return {
-          ID_USER: user[0].ID_USER,
-          NOMBRE: user[0].NOMBRE,
-          APELLIDO: user[0].APELLIDO,
-          DNI: user[0].DNI,
-          ID_ROL: user[0].ID_ROL,
-          VENCIMIENTO: user[0].VENCIMIENTO
+          id_usuario: user[0].ID_USUARIO,
+          nombre: user[0].NOMBRE,
+          apellido: user[0].APELLIDO,
+          dni: user[0].DNI,
+          domicilio: user[0].DOMICILIO,
+          email: user[0].EMAIL,
+          cbu: user[0].CBU
         }
       }
     } catch (err) {
       console.log(err)
       return ({
         status: "error",
-        message: 'Usuario no encontrado.'
+        message: 'Error buscando usuario.'
     });
     }
   }
-  
-  static async getUserByID(idUser) {
+
+
+  static async register(newUser) {
     try {
-      const user = await db.query(
-        `SELECT ID_USER,NOMBRE,APELLIDO,DNI,ID_ROL,VENCIMIENTO FROM USUARIO WHERE ID_USER = ?`, [idUser]
+      await db.query(
+        `INSERT INTO USUARIO (NOMBRE, APELLIDO, DNI, DOMICILIO, EMAIL, CONTRASENA, CBU, WSP)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [newUser.nombre, newUser.apellido, newUser.dni, newUser.domicilio, newUser.mail, newUser.password, newUser.cbu, newUser.wsp]
       );
-      return user[0]
     } catch (err) {
       console.log(err)
       return ({
-        message: 'Error getting rutinas.'
-      });
+        status: "error",
+        message: 'Error registrando usuario.'
+    });
     }
   }
 
-  
+  static async getUsuario(idUser) {
+    try {
+      const user = await db.query(
+        `SELECT * FROM USUARIO WHERE ID_USUARIO = ?`, [idUser]
+      );
+      if(user.length > 0){
+        return {
+          id_usuario: user[0].ID_USUARIO,
+          nombre: user[0].NOMBRE,
+          apellido: user[0].APELLIDO,
+          dni: user[0].DNI,
+          domicilio: user[0].DOMICILIO,
+          email: user[0].EMAIL,
+          cbu: user[0].CBU,
+          wsp: user[0].WSP
+        }
+      }
+    } catch (err) {
+      console.log(err)
+      return ({
+        status: "error",
+        message: 'Error buscando usuario.'
+    });
+    }
+  }
+
 }

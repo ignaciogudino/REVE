@@ -33,7 +33,7 @@
             <!-- SOLICITUD PAGADA-->
              <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 3" class="wrap-price-icons">
                 <span>ESTADO: <span style="color: blue">ALQUILADO (Hasta {{fechaEntrega}})</span></span>
-                <div v-if="periodoCompleto" @click="entregarVehiculo()" class="trash-publicacion"><i class="fa fa-shopping-cart">HH:TX</i></div>
+                <div v-if="periodoCompleto" @click="entregarVehiculo()" class="trash-publicacion"><i class="fa-solid fa-handshake"></i></div>
             </div>       
             <!-- SOLICITUD PAGADA-->
 
@@ -46,7 +46,7 @@
             <!-- SOLICITUD FINALIZADA-->
              <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 5" class="wrap-price-icons">
                 <span>ESTADO: <span style="color: red">FINALIZADA</span></span>
-                <div @click="enviarComentario()" class="trash-publicacion"><i class="fa fa-shopping-cart">HH:ESTRELLA</i></div>
+                <div @click="enviarComentario()" class="trash-publicacion"><i class="fa-solid fa-star"></i></div>
             </div>     
             <!-- SOLICITUD FINALIZADA-->
 

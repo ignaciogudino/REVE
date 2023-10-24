@@ -35,14 +35,14 @@
              <!-- SOLICITUD PAGADA-->
              <div v-if="this.publicacion.ID_ESTADO_PUBLICACION == 6" class="wrap-price-icons">
                 <span>ESTADO: <span style="color: green">ENTREGADO POR INQUILINO</span></span>
-                <div @click="aceptarEntrega()" class="trash-publicacion"><i class="fas fa-search">HH:TX</i></div>
+                <div @click="aceptarEntrega()" class="trash-publicacion"><i class="fa-solid fa-handshake"></i></div>
             </div>
             <!-- SOLICITUD PAGADA-->
 
             <!-- SOLICITUD FINALIZADA-->
              <div v-if="this.publicacion.ID_ESTADO_PUBLICACION == 5" class="wrap-price-icons">
                 <span>ESTADO PUBLICACION: <span style="color: red">FINALIZADA</span></span>
-                <div @click="reiniciarPublicacion()" class="trash-publicacion"><i class="fas fa-search">HH:REINICIAR</i></div>
+                <div @click="reiniciarPublicacion()" class="trash-publicacion"><i class="fa-solid fa-rotate-right"></i></div>
             </div>
             <!-- SOLICITUD FINALIZADA-->
 

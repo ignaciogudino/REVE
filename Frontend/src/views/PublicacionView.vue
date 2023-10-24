@@ -36,17 +36,30 @@
                 <!-- CARACTERISTICAS VEHICULO -->
 
                 <div class="info-owner-wrapper">
-                    <span class="card-title-rent">Características del vehículo</span>
+                    <span class="card-title-rent">Características del Vehículo</span>
                     <span class="card-owner-title"><b>Marca:</b> {{publicacion.MARCA}} </span>
                     <span class="card-owner-title"><b>Modelo:</b> {{publicacion.MODELO}}</span>
                     <span class="card-owner-title"><b>Color:</b> {{publicacion.COLOR}}</span>
                     <span class="card-owner-title"><b>Capacidad:</b> {{publicacion.CAPACIDAD}} personas</span>
                     <span class="card-owner-title"><b>Puertas:</b> {{publicacion.PUERTAS}}</span>
                     <span class="card-owner-title"><b>Kilometros:</b> {{publicacion.KILOMETRAJE}}</span>
-                    <span class="card-owner-title"><b>Comentarios:</b> {{publicacion.COMENTARIO}}</span>
+                    <span class="card-owner-title"><b>Comentario del propietario:</b> {{publicacion.COMENTARIO}}</span>
                 </div>
 
                 <hr class="card-divider">
+
+                 <!-- OPINIONES -->
+
+                <div v-if="opiniones.length > 0">
+                    <div class="info-owner-wrapper">
+                        <span class="card-title-rent">Comentarios de otros usuarios</span>
+                        <span class="card-owner-title" v-for="i in opiniones" v-bind:key="i.index">
+                            - "{{i.OPINION}}" ({{i.CALIFICACION}}/5 ★)
+                        </span>
+                    </div>
+
+                    <hr class="card-divider">
+                </div>
 
                 <!-- DETALLES DEL ALQUILER -->
                 <span class="card-title-rent">Fecha del Alquiler</span>
@@ -105,6 +118,7 @@ export default {
         check: false,
 
         publicacion: null,
+        opiniones: [],
 
         //v-model
         fechaEntrega: new Date(),
@@ -139,7 +153,8 @@ export default {
     async getPublicacion(){
         await axios.get(process.env.VUE_APP_API_URL + '/publicacion/' + this.idPublicacion)
         .then(async resp => {
-            this.publicacion = resp.data
+            this.publicacion = resp.data.car
+            this.opiniones = resp.data.opiniones
         })
         .catch( err => {
             Swal.fire('Error',err.response.data.message,'error')

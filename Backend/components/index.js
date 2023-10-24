@@ -39,4 +39,13 @@ export default function userRoutes(app) {
     router.post('/crear-publicacion', Car.crearPublicacion)
 
     router.get('/buscar/:ciudad', Car.buscarPublicaciones)
+
+    router.post('/nuevo-comentario', Car.nuevoComentario)
+
+    router.put('/entregar-auto/:idPublicacion', Car.entregarAuto)
+
+    router.put('/aceptar-entrega/:idPublicacion', Car.aceptarEntrega)
+
+    router.put('/reiniciar/:idPublicacion', Car.reiniciar)
+
 }

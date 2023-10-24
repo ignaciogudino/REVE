@@ -25,20 +25,25 @@ export default class CarService {
 
   static async getPublicacion(idPublicacion) {
     try {
-      const cars = await db.query(
+      let cars = await db.query(
         `SELECT * FROM PUBLICACION P
         INNER JOIN VEHICULO V ON P.ID_VEHICULO = V.ID_VEHICULO
         INNER JOIN USUARIO U ON U.ID_USUARIO = V.ID_PROPIETARIO
         WHERE P.ID_ESTADO_PUBLICACION = 1 AND P.ID_PUBLICACION = ?`, [idPublicacion]
       );
+
       if(cars.length > 0){
-        return cars[0]
+        const opiniones = await db.query(
+          `SELECT * FROM OPINION WHERE ID_VEHICULO = ?`, [cars[0].ID_VEHICULO]
+        );
+
+        return {car: cars[0], opiniones: opiniones}
       }
     } catch (err) {
       console.log(err)
       return ({
         status: "error",
-        message: 'Error bsucando vehiculos destacados.'
+        message: 'Error buscando publicacion.'
     });
     }
   }
@@ -253,7 +258,8 @@ export default class CarService {
         `SELECT * FROM PUBLICACION P
         INNER JOIN VEHICULO V ON V.ID_VEHICULO = P.ID_VEHICULO
         INNER JOIN USUARIO U ON V.ID_PROPIETARIO = U.ID_USUARIO 
-        WHERE UBICACION_RETIRO LIKE ? AND P.ID_ESTADO_PUBLICACION = 1`, [ciudad]
+        INNER JOIN ALQUILER A ON A.ID_PUBLICACION = P.ID_PUBLICACION
+        WHERE UBICACION_RETIRO LIKE ? AND (P.ID_ESTADO_PUBLICACION = 1 OR P.ID_ESTADO_PUBLICACION = 4)`, [ciudad]
       );
 
       return publicaciones
@@ -262,6 +268,78 @@ export default class CarService {
       return ({
         status: "error",
         message: 'Error buscando publicaciones.'
+    });
+    }
+  }
+
+  static async nuevoComentario(calificacion, comentario, vehiculo) {
+    try {
+
+      await db.query(
+        `INSERT INTO OPINION (CALIFICACION, OPINION, ID_VEHICULO) 
+        VALUES (?, ?, ?)`, [calificacion, comentario, vehiculo]
+      );
+
+    } catch (err) {
+      console.log(err)
+      return ({
+        status: "error",
+        message: 'Error creando comentario.'
+    });
+    }
+  }
+
+
+  static async entregarAuto(idPublicacion) {
+    try {
+      
+      await db.query(
+        `UPDATE ALQUILER SET ID_ESTADO_ALQUILER = 6 WHERE ID_PUBLICACION = ? AND ID_ESTADO_ALQUILER = 3`, [idPublicacion]
+      );
+
+      await db.query(
+        `UPDATE PUBLICACION SET ID_ESTADO_PUBLICACION = 6 WHERE ID_PUBLICACION = ? AND ID_ESTADO_PUBLICACION = 4`, [idPublicacion]
+      );
+
+    } catch (err) {
+      return ({
+        status: "error",
+        message: 'Error entregando auto.'
+    });
+    }
+  }
+
+  static async aceptarEntrega(idPublicacion) {
+    try {
+      
+      await db.query(
+        `UPDATE ALQUILER SET ID_ESTADO_ALQUILER = 5 WHERE ID_PUBLICACION = ? AND ID_ESTADO_ALQUILER = 6`, [idPublicacion]
+      );
+
+      await db.query(
+        `UPDATE PUBLICACION SET ID_ESTADO_PUBLICACION = 5 WHERE ID_PUBLICACION = ? AND ID_ESTADO_PUBLICACION = 6`, [idPublicacion]
+      );
+
+    } catch (err) {
+      return ({
+        status: "error",
+        message: 'Error aceptando entrega del auto.'
+    });
+    }
+  }
+
+
+  static async reiniciar(idPublicacion) {
+    try {
+      
+      await db.query(
+        `UPDATE PUBLICACION SET ID_ESTADO_PUBLICACION = 1 WHERE ID_PUBLICACION = ? AND ID_ESTADO_PUBLICACION = 5`, [idPublicacion]
+      );
+
+    } catch (err) {
+      return ({
+        status: "error",
+        message: 'Error reiniciando .'
     });
     }
   }

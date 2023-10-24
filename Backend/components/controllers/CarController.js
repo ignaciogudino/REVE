@@ -239,4 +239,58 @@ export default class CarController {
     }
   }
 
+  static async nuevoComentario(req, res, next) {
+    try {
+
+        const calificacion = req.body.calificacion
+        const comentario = req.body.comentario
+        const vehiculo = req.body.vehiculo
+
+        await Car.nuevoComentario(calificacion, comentario, vehiculo);
+         
+        return await res.status(200).json({message: "Comentario creado."})
+        
+    } catch (err) {
+      res.status(500).send(err);
+      next(err);
+    }
+  }
+
+
+  static async entregarAuto(req, res, next) {
+    try {
+        const id = req.params.idPublicacion
+        await Car.entregarAuto(id);
+        
+        return await res.status(200).json({message: "Auto entregado", text: "Indicaste que el auto ya fue entregado al propietario"})
+    } catch (err) {
+      res.status(500).send(err);
+      next(err);
+    }
+  }
+
+
+  static async aceptarEntrega(req, res, next) {
+    try {
+        const id = req.params.idPublicacion
+        await Car.aceptarEntrega(id);
+        
+        return await res.status(200).json({message: "Alquiler finalizado", text: "Como ambas partes marcaron el auto fue entregado, damos el alquiler como finalizado"})
+    } catch (err) {
+      res.status(500).send(err);
+      next(err);
+    }
+  }
+
+  static async reiniciar(req, res, next) {
+    try {
+        const id = req.params.idPublicacion
+        await Car.reiniciar(id);
+        
+        return await res.status(200).json({message: "La publicación fue reactivada", text: "Los demás usuarios podrán ver dicha publicación desde la pagina principal de REVE"})
+    } catch (err) {
+      res.status(500).send(err);
+      next(err);
+    }
+  }
 }

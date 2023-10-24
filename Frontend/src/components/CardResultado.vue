@@ -1,5 +1,6 @@
 <template>
-   <div class="card" @click="navegarAPublicacion()">
+   <!-- PUBLICACION ACTIVA -->
+   <div class="card" @click="navegarAPublicacion()" v-if="car.ID_ESTADO_PUBLICACION == 1">
       <div class="card-img">
           <img :src="imagenUrl">
       </div>
@@ -7,9 +8,28 @@
           <span class="card-car">{{car.MODELO}}, {{car.MARCA}} ({{car.KILOMETRAJE}} km)</span>
           <span class="card-distance">{{car.UBICACION_RETIRO}}</span>
           <hr class="card-divider">
+          <span>ESTADO PUBLICACION: <span style="color: green">DISPONIBLE</span></span>
+          <hr class="card-divider">
           <span class="card-price">${{car.PRECIO_DIA}}/día</span>
       </div>
   </div>
+   <!-- FIN PUBLICACION ACTIVA -->
+
+    <!-- PUBLICACION ALQUILADA -->
+   <div class="card" v-if="car.ID_ESTADO_PUBLICACION == 4" style="cursor: normal">
+      <div class="card-img">
+          <img :src="imagenUrl">
+      </div>
+      <div class="card-details">
+          <span class="card-car">{{car.MODELO}}, {{car.MARCA}} ({{car.KILOMETRAJE}} km)</span>
+          <span class="card-distance">{{car.UBICACION_RETIRO}}</span>
+          <hr class="card-divider">
+          <span>ESTADO: <span style="color: blue">ALQUILADO (Hasta {{fechaEntrega}})</span></span>
+          <hr class="card-divider">
+          <span class="card-price">${{car.PRECIO_DIA}}/día</span>
+      </div>
+   </div>
+   <!-- FIN PUBLICACION ALQUILADA -->
 </template>
 
 <script>
@@ -28,9 +48,11 @@ export default {
         imagenUrl(){
             let url = 'http://localhost:3000/' + this.car.IMG_URL
             return url
+        },
+        fechaEntrega(){
+            return new Date(this.car.FECHA_ENTREGA + 1000 * 60 * 60 * 3).toLocaleDateString()
         }
     }
-
 }
 </script>
 

@@ -31,12 +31,24 @@
             <!-- SOLICITUD ACEPTADA-->
             
             <!-- SOLICITUD PAGADA-->
-            <span v-if="this.solicitud.ID_ESTADO_ALQUILER == 3">ESTADO: <span style="color: blue">ALQUILADO (Hasta {{fechaEntrega}})</span></span>
+             <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 3" class="wrap-price-icons">
+                <span>ESTADO: <span style="color: blue">ALQUILADO (Hasta {{fechaEntrega}})</span></span>
+                <div v-if="periodoCompleto" @click="entregarVehiculo()" class="trash-publicacion"><i class="fa fa-shopping-cart">HH:TX</i></div>
+            </div>       
             <!-- SOLICITUD PAGADA-->
 
-            <!-- SOLICITUD PAGADA-->
-            <span v-if="this.solicitud.ID_ESTADO_ALQUILER == 5">ESTADO: <span style="color: RED">FINALIZADA</span></span>
-            <!-- SOLICITUD PAGADA-->
+
+            <!-- SOLICITUD ENTREGADO -->
+            <span v-if="this.solicitud.ID_ESTADO_ALQUILER == 6">ESTADO: <span style="color: green">VEHICULO ENTREGADO</span></span>
+            <!-- SOLICITUD ENTREGADO -->
+
+
+            <!-- SOLICITUD FINALIZADA-->
+             <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 5" class="wrap-price-icons">
+                <span>ESTADO: <span style="color: red">FINALIZADA</span></span>
+                <div @click="enviarComentario()" class="trash-publicacion"><i class="fa fa-shopping-cart">HH:ESTRELLA</i></div>
+            </div>     
+            <!-- SOLICITUD FINALIZADA-->
 
             <hr class="card-divider">
 
@@ -106,7 +118,94 @@ export default {
     },
     verMotivoRechazo(){
         return Swal.fire('Motivo de Rechazo', `"`+this.solicitud.MOTIVO_RECHAZO+`"`, 'info')
-    }
+    },
+    entregarVehiculo(){
+        return Swal.fire({
+            title: `¿Ya le devolviste el auto a ${this.solicitud.NOMBRE + " " +this.solicitud.APELLIDO}?`,
+            text: "El propietario del vehiculo tambien deberá confirmar la entrega para que la publicación finalice",
+            icon: "warning",
+            showCloseButton: true,
+            confirmButtonText: 'VEHICULO ENTREGADO',
+            cancelButtonColor: "#FF0000",
+            showCancelButton: true,
+            cancelButtonText: 'CANCELAR',
+            preConfirm: async () => {
+                await axios.put(process.env.VUE_APP_API_URL + '/entregar-auto/' + this.solicitud.ID_PUBLICACION)
+                .then(async resp => {
+                    Swal.fire(resp.data.message, resp.data.text,'success')
+                    this.$emit("refresh")
+                })
+                .catch(err => console.log(err))
+                
+            },
+        }) 
+    },
+    enviarComentario(){
+        return Swal.fire({
+                title: `Ingrese un comentario del vehiculo`,
+                html: `
+                       
+
+                       <div class="rate">
+                            <span style="text-decoration: underline">Calificación (1 a 5)</span>
+                            <input type="radio" id="star1" name="rate" value="1"/>
+                            <label for="star1" title="text">1</label>
+                            <input type="radio" id="star2" name="rate" value="2"/>
+                            <label for="star2" title="text">2</label>
+                            <input type="radio" id="star3" name="rate" value="3"/>
+                            <label for="star3" title="text">3</label>
+                            <input type="radio" id="star4" name="rate" value="4"/>
+                            <label for="star4" title="text">4</label>
+                            <input type="radio" id="star5" name="rate" value="5"/>
+                            <label for="star5" title="text">5</label>
+                        </div> 
+                        
+                        <br>
+
+                       <input type="text" id="comentario" class="swal2-input" size=32 placeholder="Comentario" >`,
+
+                icon: "warning",
+                showCloseButton: true,
+                confirmButtonText: `ENVIAR COMENTARIO`,
+                confirmButtonColor: '#3085d6',
+                showCancelButton: true,
+                cancelButtonText: 'CANCELAR',
+                cancelButtonColor: '#b80f0f',
+            }).then((result) => {
+
+                if (result.isConfirmed){
+
+                    const comentario = Swal.getPopup().querySelector('#comentario').value
+                    const radioButtons = Swal.getPopup().querySelectorAll('input[name="rate"]');
+
+                    let rate;
+
+                    for (let i=0; i<radioButtons.length; i++)
+                    {
+                        if(radioButtons[i].checked)
+                        {
+                            rate = radioButtons[i].value
+                        }
+                    }
+
+                    if (!comentario || !rate) {
+                            return Swal.fire('Error', 'Comentario incompleto', 'error')
+                    }
+
+                    console.log('id_vehicu', this.solicitud.ID_VEHICULO)
+                    console.log('calificacion', rate)
+                    console.log('comentario', comentario)
+
+                    axios.post(process.env.VUE_APP_API_URL + '/nuevo-comentario', {vehiculo: this.solicitud.ID_VEHICULO, calificacion: rate, comentario: comentario})
+                    .then(async resp => {
+                        Swal.fire(resp.data.message, '','success')
+                        this.$emit("refresh")
+                    })
+                    .catch(err => console.log(err))
+                }
+
+            })
+        }
     },
     computed: {
         imagenUrl(){
@@ -115,6 +214,9 @@ export default {
         },
         fechaEntrega(){
             return new Date(this.solicitud.FECHA_ENTREGA + 1000 * 60 * 60 * 3).toLocaleDateString()
+        },
+        periodoCompleto(){
+            return Date.now() > this.solicitud.FECHA_ENTREGA + 1000 * 60 * 60 * 3
         }
     }
 }
@@ -188,5 +290,41 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.rate {
+    float: left;
+    height: 46px;
+    padding: 0 10px;
+}
+.rate:not(:checked) > input {
+    position:absolute;
+    top:-9999px;
+}
+.rate:not(:checked) > label {
+    float:right;
+    width:1em;
+    overflow:hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    font-size:30px;
+    color:#ccc;
+}
+.rate:not(:checked) > label:before {
+    content: '★';
+}
+.rate > input:checked ~ label {
+    color: #ffc700;    
+}
+.rate:not(:checked) > label:hover,
+.rate:not(:checked) > label:hover ~ label {
+    color: #deb217;  
+}
+.rate > input:checked + label:hover,
+.rate > input:checked + label:hover ~ label,
+.rate > input:checked ~ label:hover,
+.rate > input:checked ~ label:hover ~ label,
+.rate > label:hover ~ input:checked ~ label {
+    color: #c59b08;
 }
 </style>

@@ -32,9 +32,17 @@
             </div>
             <!-- SOLICITUD PAGADA-->
 
+             <!-- SOLICITUD PAGADA-->
+             <div v-if="this.publicacion.ID_ESTADO_PUBLICACION == 6" class="wrap-price-icons">
+                <span>ESTADO: <span style="color: green">ENTREGADO POR INQUILINO</span></span>
+                <div @click="aceptarEntrega()" class="trash-publicacion"><i class="fas fa-search">HH:TX</i></div>
+            </div>
+            <!-- SOLICITUD PAGADA-->
+
             <!-- SOLICITUD FINALIZADA-->
              <div v-if="this.publicacion.ID_ESTADO_PUBLICACION == 5" class="wrap-price-icons">
                 <span>ESTADO PUBLICACION: <span style="color: red">FINALIZADA</span></span>
+                <div @click="reiniciarPublicacion()" class="trash-publicacion"><i class="fas fa-search">HH:REINICIAR</i></div>
             </div>
             <!-- SOLICITUD FINALIZADA-->
 
@@ -43,7 +51,7 @@
             <div class="wrap-price-icons">
                 <div v-if="this.publicacion.ID_ESTADO_PUBLICACION == 1 || this.publicacion.ID_ESTADO_PUBLICACION == 5" @click="eliminarPublicacion()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
                 <div v-else></div>
-                <span>$12.500/día</span>
+                <span>${{this.publicacion.PRECIO_DIA}}/dia</span>
             </div>
             
         </div>
@@ -186,6 +194,51 @@ export default {
             })
         
         },
+        aceptarEntrega(){
+
+            return Swal.fire({
+                title: `¿Recibiste el auto sin problemas?`,
+                text: "El inquilino marcó el auto como entregado",
+                icon: "warning",
+                showCloseButton: true,
+                confirmButtonText: 'RECIBÍ EL AUTO',
+                cancelButtonColor: "#FF0000",
+                showCancelButton: true,
+                cancelButtonText: 'NO RECIBÍ EL AUTO',
+                preConfirm: async () => {
+                    await axios.put(process.env.VUE_APP_API_URL + '/aceptar-entrega/' + this.publicacion.ID_PUBLICACION)
+                    .then(async resp => {
+                        Swal.fire(resp.data.message, resp.data.text,'success')
+                        this.$emit("refresh")
+                    })
+                    .catch(err => console.log(err))
+                    
+                },
+            }) 
+
+        },
+        reiniciarPublicacion(){
+              return Swal.fire({
+                title: `¿Queres volver a activar la publicación?`,
+                text: "La publicaciones activas pueden ser solicitadas por nuevos inquilinos",
+                icon: "warning",
+                showCloseButton: true,
+                confirmButtonText: 'ACTIVAR',
+                cancelButtonColor: "#FF0000",
+                showCancelButton: true,
+                cancelButtonText: 'CANCELAR',
+                preConfirm: async () => {
+                    await axios.put(process.env.VUE_APP_API_URL + '/reiniciar/' + this.publicacion.ID_PUBLICACION)
+                    .then(async resp => {
+                        Swal.fire(resp.data.message, resp.data.text,'success')
+                        this.$emit("refresh")
+                    })
+                    .catch(err => console.log(err))
+                    
+                },
+            }) 
+
+        }
     },
     computed: {
         imagenUrl(){

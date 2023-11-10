@@ -255,10 +255,10 @@ export default class CarService {
 
       ciudad = '%' + ciudad + '%'
       const publicaciones = await db.query(
-        `SELECT * FROM PUBLICACION P
+        `SELECT *, P.ID_PUBLICACION FROM PUBLICACION P
         INNER JOIN VEHICULO V ON V.ID_VEHICULO = P.ID_VEHICULO
         INNER JOIN USUARIO U ON V.ID_PROPIETARIO = U.ID_USUARIO 
-        INNER JOIN ALQUILER A ON A.ID_PUBLICACION = P.ID_PUBLICACION
+        LEFT JOIN ALQUILER A ON A.ID_PUBLICACION = P.ID_PUBLICACION
         WHERE UBICACION_RETIRO LIKE ? AND (P.ID_ESTADO_PUBLICACION = 1 OR P.ID_ESTADO_PUBLICACION = 4)`, [ciudad]
       );
 
@@ -279,6 +279,18 @@ export default class CarService {
         `INSERT INTO OPINION (CALIFICACION, OPINION, ID_VEHICULO) 
         VALUES (?, ?, ?)`, [calificacion, comentario, vehiculo]
       );
+
+      const idSol =  await db.query(
+        `SELECT A.ID_ALQUILER FROM ALQUILER A
+         INNER JOIN PUBLICACION P ON A.ID_PUBLICACION = P.ID_PUBLICACION
+         INNER JOIN VEHICULO V ON V.ID_VEHICULO = P.ID_VEHICULO
+         WHERE V.ID_VEHICULO = ?`, [vehiculo]
+      ); 
+
+     await db.query(
+        `UPDATE ALQUILER SET ID_ESTADO_ALQUILER = 4 WHERE ID_ALQUILER = ?`, [idSol[0].ID_ALQUILER]
+      );
+
 
     } catch (err) {
       console.log(err)

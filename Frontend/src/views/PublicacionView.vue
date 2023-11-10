@@ -43,7 +43,7 @@
                     <span class="card-owner-title"><b>Capacidad:</b> {{publicacion.CAPACIDAD}} personas</span>
                     <span class="card-owner-title"><b>Puertas:</b> {{publicacion.PUERTAS}}</span>
                     <span class="card-owner-title"><b>Kilometros:</b> {{publicacion.KILOMETRAJE}}</span>
-                    <span class="card-owner-title"><b>Comentario del propietario:</b> {{publicacion.COMENTARIO}}</span>
+                    <span class="card-owner-title"><b>Información:</b> {{publicacion.COMENTARIO}}</span>
                 </div>
 
                 <hr class="card-divider">

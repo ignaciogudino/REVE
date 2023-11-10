@@ -179,8 +179,9 @@ export default class CarController {
   static async pagarSolicitud(req, res, next) {
     try {
         const id = req.params.idSolicitud
-        await Car.pagarSolicitud(id);
         
+        await Car.pagarSolicitud(id);
+
         return await res.status(200).json({message: "PAGO REALIZADO", text: "Coordiná la entrega del auto con el propietario."})
         
     } catch (err) {
@@ -248,7 +249,7 @@ export default class CarController {
 
         await Car.nuevoComentario(calificacion, comentario, vehiculo);
          
-        return await res.status(200).json({message: "Comentario creado."})
+        return await res.status(200).json({message: "Comentario creado.", text: "Muchas gracias por su tiempo."})
         
     } catch (err) {
       res.status(500).send(err);
@@ -275,7 +276,7 @@ export default class CarController {
         const id = req.params.idPublicacion
         await Car.aceptarEntrega(id);
         
-        return await res.status(200).json({message: "Alquiler finalizado", text: "Como ambas partes marcaron el auto fue entregado, damos el alquiler como finalizado"})
+        return await res.status(200).json({message: "Alquiler Finalizado", text: "Ambas partes indicaron que el auto fue entregado"})
     } catch (err) {
       res.status(500).send(err);
       next(err);

@@ -25,9 +25,10 @@
 
             <!-- SOLICITUD ACEPTADA-->
             <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 2" class="wrap-price-icons">
-                <span>ESTADO: <span style="color: green">ACEPTADO (PAGO PENDIENTE)</span></span>
-                <div @click="realizarPago()" class="trash-publicacion"><i class="fa fa-shopping-cart"></i></div>
-            </div>            
+                <span v-if="!mercadopagoButton">ESTADO: <span style="color: green">ACEPTADO (PAGO PENDIENTE)</span></span>
+                <div v-if="!mercadopagoButton" @click="realizarPago()" class="trash-publicacion"><i class="fa fa-shopping-cart"></i></div>
+            </div>         
+            <div v-if="mercadopagoButton" id="button-checkout"></div>
             <!-- SOLICITUD ACEPTADA-->
             
             <!-- SOLICITUD PAGADA-->
@@ -50,26 +51,38 @@
             </div>     
             <!-- SOLICITUD FINALIZADA-->
 
-            <hr class="card-divider">
+            <hr class="card-divider" v-if="!mercadopagoButton">
 
-            <div class="wrap-price-icons">
+            <div class="wrap-price-icons" v-if="!mercadopagoButton">
                 <span>$ <b>{{this.solicitud.COSTO}}</b>   (${{this.solicitud.PRECIO_DIA}}/día)</span>
                 <div v-if="this.solicitud.ID_ESTADO_ALQUILER == 0" @click="eliminarSolicitud()" class="trash-publicacion"><i class="fa-solid fa-trash-can"></i></div>
             </div>
-            
+
         </div>
     </div>
    
 </template>
 
 <script>
+
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
+
 export default {
   name: 'CardSolicitud',
+  data(){
+    return{
+        mercadopagoButton: false,
+    }
+  },
   props: {
     solicitud: null
+  },
+  created(){
+    let p = this.$route.query.collection_status
+    this.pagoAutomatico(p)
+    console.log(this.solicitud)
   },
   emits: ["refresh"],
   methods: {
@@ -98,23 +111,57 @@ export default {
             },
         }) 
     },
-    realizarPago(){
-        return Swal.fire({
-            title: `¿Está seguro que desea realizar el pago?`,
-            text: "Será direccionado a Mercado Pago",
-            icon: "warning",
-            showCloseButton: true,
-            confirmButtonText: `IR A MERCADOPAGO`,
-            preConfirm: async () => {
-                await axios.put(process.env.VUE_APP_API_URL + '/pagar-solicitud/' + this.solicitud.ID_ALQUILER)
+    async realizarPago(){
+        this.mercadopagoButton = true
+
+        let preference;
+        // eslint-disable-next-line
+        const mercadopago = new MercadoPago("TEST-43de6296-df61-41d6-a968-c4f6740d817a", {
+            locale: "es-AR", 
+        });
+
+        Swal.showLoading()
+        await axios.post('http://localhost:3000/create_preference', 
+        {title: `REVE (${this.solicitud.MARCA + " - " +this.solicitud.MODELO})`,
+         unit_price: this.solicitud.COSTO})
                 .then(async resp => {
-                    Swal.fire(resp.data.message, resp.data.text,'success')
-                    this.$emit("refresh")
+                    preference = resp.data.id
                 })
                 .catch(err => console.log(err))
                 
-            },
-        }) 
+
+        const bricksBuilder = mercadopago.bricks();
+
+        const renderComponent = async (bricksBuilder) => {
+            if (window.checkoutButton) window.checkoutButton.unmount();
+            await bricksBuilder.create(
+            "wallet",
+            "button-checkout", 
+            {
+                initialization: {
+                preferenceId: preference,
+                },
+                callbacks: {
+                onError: (error) => console.error(error),
+                onReady: () => {},
+                },
+            }
+            );
+        };
+        window.checkoutButton = renderComponent(bricksBuilder);
+        Swal.close()                
+    },
+    async pagoAutomatico(status){
+
+        if(status == "approved")
+        {
+        await axios.put(process.env.VUE_APP_API_URL + '/pagar-solicitud/' + this.solicitud.ID_ALQUILER)
+        .then(() => {
+            this.$emit("refresh")
+        })
+        .catch(err => console.log(err))
+        }
+        
     },
     verMotivoRechazo(){
         return Swal.fire('Motivo de Rechazo', `"`+this.solicitud.MOTIVO_RECHAZO+`"`, 'info')
@@ -192,13 +239,9 @@ export default {
                             return Swal.fire('Error', 'Comentario incompleto', 'error')
                     }
 
-                    console.log('id_vehicu', this.solicitud.ID_VEHICULO)
-                    console.log('calificacion', rate)
-                    console.log('comentario', comentario)
-
                     axios.post(process.env.VUE_APP_API_URL + '/nuevo-comentario', {vehiculo: this.solicitud.ID_VEHICULO, calificacion: rate, comentario: comentario})
                     .then(async resp => {
-                        Swal.fire(resp.data.message, '','success')
+                        Swal.fire(resp.data.message, resp.data.text,'success')
                         this.$emit("refresh")
                     })
                     .catch(err => console.log(err))

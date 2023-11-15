@@ -88,7 +88,15 @@
                     <div class="date-wrapper">
                      <div class="date-from"> 
                             <span>Ubicación de Retiro</span>
-                            <input v-model="ubicacion" type="text" class="input-date" :placeholder="domicilio" >
+                            <vue-google-autocomplete 
+                                id="map" 
+                                classname="input-date" 
+                                :placeholder="domicilio" 
+                                v-on:placechanged="getAddressData" 
+                                ref="ubicacion" 
+                                country="ar">
+                            </vue-google-autocomplete>
+
                         </div>
                         <div class="date-from"> 
                             <span>Precio por Dia (en pesos)</span>
@@ -145,9 +153,14 @@
 <script>
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import VueGoogleAutocomplete from "vue-google-autocomplete";
+
 
 export default {
   name: 'NuevaPublicacionView',
+  components: {
+    VueGoogleAutocomplete
+  },
   data(){
     return{
         check: false,
@@ -254,6 +267,12 @@ export default {
     handleFileChange(event) {
         this.selectedFile = event.target.files[0];
         this.selectedFile ? this.selectedFileUrl = URL.createObjectURL(this.selectedFile) : this.selectedFileUrl = null
+    },
+    getAddressData: function (addressData) {
+        let calle = addressData.route
+        let localidad = addressData.locality 
+        let provincia = addressData.administrative_area_level_1
+        this.ubicacion =  calle + ", " + localidad + ", " + provincia;
     },
   },
   watch: {

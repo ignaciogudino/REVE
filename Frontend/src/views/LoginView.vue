@@ -39,7 +39,14 @@
                 <input class="input" type="number" name="dni" placeholder="DNI" v-model="dni">
             </div>
             <div class="wrap-input">
-                <input class="input" type="text" name="domicilio" placeholder="Domicilio" v-model="domicilio">
+            <vue-google-autocomplete 
+                id="map" 
+                classname="input"
+                placeholder="Domicilio" 
+                v-on:placechanged="getAddressData" 
+                ref="domicilio" 
+                country="ar">
+            </vue-google-autocomplete>
             </div>
             <div class="wrap-input">
                 <input class="input" type="number" name="whatsapp" placeholder="WhatsApp" v-model="wsp">
@@ -74,9 +81,14 @@
 <script>
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import VueGoogleAutocomplete from "vue-google-autocomplete";
+
 
 export default {
   name: 'LoginView',
+  components: {
+    VueGoogleAutocomplete
+  },
   data(){
     return{
         mail: "",
@@ -162,7 +174,13 @@ export default {
                 this.registerMode = false
             },
         }) 
-    }
+    },
+    getAddressData: function (addressData) {
+        let calle = addressData.route
+        let localidad = addressData.locality 
+        let provincia = addressData.administrative_area_level_1
+        this.domicilio =  calle + ", " + localidad + ", " + provincia;
+    },
   }
 }
 </script>
